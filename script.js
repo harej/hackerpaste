@@ -157,7 +157,8 @@ const openInNewTab = () => {
 
 const buildUrl = (skylink, mode) => {
   const base = `${location.protocol}//${location.host}${location.pathname}`;
-  const url = base + "#" + skylink;
+  const query = shorten('Plain Text') === select.selected() ? '' : `?l=${encodeURIComponent(select.selected())}`;
+  const url = base + query + "#" + skylink;
   if (mode === "markdown") {
     return `[Hacker Paste snippet](${url})`;
   }
