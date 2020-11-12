@@ -5,11 +5,11 @@
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-        <title>Hacker Paste – Decentralized Paste Service</title>
+        <title>Hacker Paste – Encrypted Trustless Text Snippets Done In-Browser</title>
         <link
             rel="stylesheet"
             type="text/css"
-            href="dep.css"
+            href="core.css"
         />
 <!--
 https://cdn.jsdelivr.net/combine/
@@ -24,9 +24,9 @@ npm/microtip@0.2.2/microtip.min.css
         <meta
             name="description"
             property="og:description"
-            content="Hacker Paste is a decentralized paste bin that is hosted on Skynet."
+            content="Hacker Paste lets you share encrypted text and code snippets through Skynet, a decentralized content delivery network."
         />
-        <meta property="og:title" content="Hacker Paste – Decentralized Paste Service" />
+        <meta property="og:title" content="Hacker Paste – Encrypted Trustless Text Snippets Done In-Browser" />
         <meta property="og:type" content="website" />
     </head>
     <body class="m-0">
@@ -52,7 +52,7 @@ npm/microtip@0.2.2/microtip.min.css
         <div id="controls" class="container-fluid shadow-bottom hide-readonly">
             <div class="row align-items-center justify-content-end my-1">
                 <div class="col-auto mb-1">
-                    <h1 class="my-0">Hacker Paste</h1>
+                    <h1 class="my-0">Hacker Paste <span style="font-size:50%">Release 3</span></h1>
                 </div>
                 <div class="col-auto">
                 </div>
@@ -87,9 +87,6 @@ npm/microtip@0.2.2/microtip.min.css
                     <button class="py-1 px-2 mx-0 my-1" onclick="generateLink('url')" type="button">
                         Generate link
                     </button>
-                    <button class="py-1 px-2 mx-1 my-1" onclick="generateLink('markdown')" type="button">
-                        Generate markdown
-                    </button>
                     <button class="py-1 px-2 mx-0 my-1" onclick="generateLink('iframe')" type="button">Embed</button>
                 </div>
             </div>
@@ -106,7 +103,7 @@ npm/microtip@0.2.2/microtip.min.css
                         Edit
                     </a>
                 </div>
-            <span class="col-auto mono"><a href="https://github.com/harej/hackerpaste" rel="noopener" target="_blank" class="mx-3">View Source on GitHub</a></span>
+            <span class="col-auto mono"><a href="https://github.com/harej/hackerpaste" rel="noopener" target="_blank" class="mx-3">App Source on GitHub</a></span>
             </div>
         </footer>
         <div id="error-modal" class="modal">
@@ -119,7 +116,7 @@ npm/microtip@0.2.2/microtip.min.css
             </div>
         </div>
 
-        <script src="dep.js"></script>
+        <script src="vendor.js"></script>
 <!--
 https://cdn.jsdelivr.net/combine/
 npm/slim-select@1.25.0/dist/slimselect.min.js,
@@ -133,6 +130,14 @@ npm/codemirror@5.58.1/addon/mode/simple.min.js,
 npm/codemirror@5.58.1/addon/scroll/simplescrollbars.js,
 npm/codemirror@5.58.1/mode/meta.min.js
 -->
-        <script src="script.js"></script>
+        <script src="core.js"></script>
+        <script src="crypto-js.min.js"></script>
+<!--
+https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js
+-->
+        <script src="randomString.js"></script>
+<!--
+https://gist.githubusercontent.com/dchest/751fd00ee417c947c252/raw/53c4e953b4748f4a46367fc1bce4aee8cfc4a1cb/randomString.js
+-->
     </body>
 </html>

@@ -62,9 +62,16 @@ const initLangSelector = () => {
 const initCode = () => {
   let skylink = location.hash.substr(1);
   if (skylink.length === 0) return;
+  isEncrypted = false;
+  if (skylink.length === 66) {
+    isEncrypted = true;
+    secretKey = skylink.substr(46);
+    skylink = skylink.substr(0,46);
+  };
   fetch(`/${skylink}`)
     .then((response) => response.text())
     .then(function (data) {
+      if (isEncrypted) data = CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(data, secretKey));
       editor.setValue(data);
     })
     .catch((error) => {
@@ -95,8 +102,10 @@ const generateUUID = () => {
 };
 
 const generateLink = (mode) => {
+  const secretKey = randomString.url(20);
   const data = editor.getValue();
-  var blob = new Blob([data], { type: "text/plain", encoding: "utf-8" });
+  const encryptedData = CryptoJS.AES.encrypt(data, secretKey);
+  var blob = new Blob([encryptedData], { type: "text/plain", encoding: "utf-8" });
   var formData = new FormData();
   formData.append("file", blob);
   const uuid = generateUUID();
@@ -107,7 +116,7 @@ const generateLink = (mode) => {
     .then((response) => response.json())
     .then((result) => {
       skylink = result.skylink;
-      url = buildUrl(skylink, mode);
+      url = buildUrl(skylink, mode, secretKey);
       showCopyBar(url);
     })
     .catch((error) => {
@@ -155,13 +164,10 @@ const openInNewTab = () => {
   window.open(location.href.replace(/[?&]readonly/, ""));
 };
 
-const buildUrl = (skylink, mode) => {
+const buildUrl = (skylink, mode, secretKey) => {
   const base = `${location.protocol}//${location.host}${location.pathname}`;
   const query = shorten('Plain Text') === select.selected() ? '' : `?l=${encodeURIComponent(select.selected())}`;
-  const url = base + query + "#" + skylink;
-  if (mode === "markdown") {
-    return `[Hacker Paste snippet](${url})`;
-  }
+  const url = base + query + "#" + skylink + secretKey;
   if (mode === "iframe") {
     const height = editor["doc"].height + 45;
     return `<iframe width="100%" height="${height}" frameborder="0" src="${url}"></iframe>`;
