@@ -55,13 +55,18 @@ const initLangSelector = () => {
   });
 
   // Set lang selector
-  const l = new URLSearchParams(window.location.search).get("l");
+  const l = location.hash.substr(1).split('.')[1] || new URLSearchParams(window.location.search).get("l");
   select.set(l ? decodeURIComponent(l) : shorten("Plain Text"));
 };
 
 const initCode = () => {
-  let skylink = location.hash.substr(1);
-  if (skylink.length === 0) return;
+  let payload = location.hash.substr(1);
+  if (payload.length === 0) return;
+  var skylinkParts = payload.split('.');
+  skylink = skylinkParts[0];
+  if (skylinkParts[1] !== undefined) {
+    var lang = skylinkParts[1]
+  }
   var isEncrypted = false;
   if (skylink.length === 66) {
     isEncrypted = true;
@@ -167,8 +172,8 @@ const openInNewTab = () => {
 
 const buildUrl = (skylink, mode, secretKey) => {
   const base = `${location.protocol}//${location.host}${location.pathname}`;
-  const query = shorten('Plain Text') === select.selected() ? '' : `?l=${encodeURIComponent(select.selected())}`;
-  const url = base + query + "#" + skylink + secretKey;
+  const lang = shorten('Plain Text') === select.selected() ? '' : `.${encodeURIComponent(select.selected())}`;
+  const url = base + "#" + skylink + secretKey + lang;
   if (mode === "iframe") {
     const height = editor["doc"].height + 45;
     return `<iframe width="100%" height="${height}" frameborder="0" src="${url}"></iframe>`;
