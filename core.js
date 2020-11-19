@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 let editor = null;
 let select = null;
 let clipboard = null;
@@ -28,7 +30,7 @@ const initCodeEditor = () => {
   statsEl = byId("stats");
   editor.on("change", () => {
     statsEl.innerHTML = `Length: ${editor.getValue().length} |  Lines: ${
-      editor["doc"].size
+      editor.doc.size
     }`;
     hideCopyBar();
   });
@@ -48,35 +50,37 @@ const initLangSelector = () => {
       editor.setOption("mode", language.mime);
       CodeMirror.autoLoadMode(editor, language.mode);
       document.title =
-        e.text && e.text !== "Plain Text"
-          ? `Hacker Paste - ${e.text} code snippet`
-          : "Hacker Paste";
+        e.text && e.text !== "Plain Text" ?
+        `Hacker Paste - ${e.text} code snippet` :
+        "Hacker Paste";
     },
   });
 
   // Set lang selector
-  const l = location.hash.substr(1).split('.')[1] || new URLSearchParams(window.location.search).get("l");
+  const l = location.hash.substr(1).split(".")[1] ||
+            new URLSearchParams(window.location.search).get("l");
   select.set(l ? decodeURIComponent(l) : shorten("Plain Text"));
 };
+
+const decryptData = (data, secretKey) =>
+  CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(data, secretKey));
 
 const initCode = () => {
   let payload = location.hash.substr(1);
   if (payload.length === 0) return;
-  var skylinkParts = payload.split('.');
-  skylink = skylinkParts[0];
-  if (skylinkParts[1] !== undefined) {
-    var lang = skylinkParts[1]
-  }
+  payload = payload.split(".");
+  var docID = payload[0];
+  var skylink;
   var isEncrypted = false;
-  if (skylink.length === 66) {
+  if (docID.length === 66) {
     isEncrypted = true;
-    secretKey = skylink.substr(46);
-    skylink = skylink.substr(0,46);
-  };
+    var secretKey = docID.substr(46);
+    skylink = docID.substr(0,46);
+  } else skylink = docID;
   fetch(`/${skylink}`)
     .then((response) => response.text())
     .then(function (data) {
-      if (isEncrypted) data = CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(data, secretKey));
+      if (isEncrypted) data = decryptData(data, secretKey);
       editor.setValue(data);
     })
     .catch((error) => {
@@ -110,7 +114,10 @@ const generateLink = (mode) => {
   const secretKey = randomString.url(20);
   const data = editor.getValue();
   const encryptedData = CryptoJS.AES.encrypt(data, secretKey);
-  var blob = new Blob([encryptedData], { type: "text/plain", encoding: "utf-8" });
+  var blob = new Blob(
+    [encryptedData],
+    { type: "text/plain", encoding: "utf-8" }
+  );
   var formData = new FormData();
   formData.append("file", blob);
   const uuid = generateUUID();
@@ -120,8 +127,8 @@ const generateLink = (mode) => {
   })
     .then((response) => response.json())
     .then((result) => {
-      skylink = result.skylink;
-      url = buildUrl(skylink, mode, secretKey);
+      var skylink = result.skylink;
+      var url = buildUrl(skylink, mode, secretKey);
       window.location = url;
       showCopyBar(url);
     })
@@ -172,11 +179,18 @@ const openInNewTab = () => {
 
 const buildUrl = (skylink, mode, secretKey) => {
   const base = `${location.protocol}//${location.host}${location.pathname}`;
-  const lang = shorten('Plain Text') === select.selected() ? '' : `.${encodeURIComponent(select.selected())}`;
+  const lang = shorten("Plain Text") === select.selected() ?
+    "" :
+    `.${encodeURIComponent(select.selected())}`;
   const url = base + "#" + skylink + secretKey + lang;
   if (mode === "iframe") {
-    const height = editor["doc"].height + 45;
-    return `<iframe width="100%" height="${height}" frameborder="0" src="${url}"></iframe>`;
+    const height = editor.doc.height + 45;
+    return `<iframe
+      width="100%"
+      height="${height}"
+      frameborder="0"
+      src="${url}">
+      </iframe>`;
   }
   return url;
 };
