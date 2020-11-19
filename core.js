@@ -64,34 +64,31 @@ const initLangSelector = () => {
 const decryptData = (data, secretKey) =>
   CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(data, secretKey));
 
-const initCode = () => {
-  let payload = location.hash.substr(1);
-  if (payload.length === 0) return;
-  payload = payload.split(".");
-  var docID = payload[0];
-  if (docID === "A".repeat(66)) {
-    docID = "AAC98dUj5MCgF7hYDKvx9BTIGYEZBgXdtEJH2DyWud7BRgT77ofz5TvVmGVlot4CHT";
-    var youSaidTheMagicWord = true;
-  }
+const loadByDocID = (docID) => {
   var skylink;
-  var isEncrypted = false;
+  if (docID === "A".repeat(66)) docID = magicWord;
   if (docID.length === 66) {
-    isEncrypted = true;
     var secretKey = docID.substr(46);
     skylink = docID.substr(0,46);
   } else skylink = docID;
   fetch(`/${skylink}`)
     .then((response) => response.text())
     .then(function (data) {
-      if (isEncrypted) data = decryptData(data, secretKey);
-      if (youSaidTheMagicWord) {
-        byId("modal-content").innerHTML = marked(data);
-        MicroModal.show('app-modal');
-      } else editor.setValue(data);
+      if (secretKey) data = decryptData(data, secretKey);
+      if (docID === magicWord ) epicGamerMoment(data);
+      else editor.setValue(data);
     })
     .catch((error) => {
       console.error("Error:", error);
     });
+}
+
+const initCode = () => {
+  let payload = location.hash.substr(1);
+  if (payload.length === 0) return;
+  payload = payload.split(".");
+  var docID = payload[0];
+  loadByDocID(docID);
 };
 
 const initClipboard = () => {
@@ -231,6 +228,19 @@ const shorten = (name) => {
   return n.substr(0, 2) + n.substr(n.length - 2, 2);
 };
 
+const magicWord = "AAC98dUj5MCgF7hYDKvx9BTIGYEZBgXdtEJH2DyWud7BRgT77ofz5TvVmGVlot4CHT";
+
+const epicGamerMoment = (data) => {
+  if (data === undefined) loadByDocID(magicWord);
+  byId("modal-content").innerHTML = marked(data);
+  MicroModal.show('app-modal');
+};
+
 const byId = (id) => document.getElementById(id);
 
 init();
+
+// randomString function for secure password generation, minified using UglifyJS
+// https://gist.githubusercontent.com/dchest/751fd00ee417c947c252/raw/53c4e953b4748f4a46367fc1bce4aee8cfc4a1cb/randomString.js
+// --------------------
+var randomString=function(){var r=("undefined"!=typeof self&&(self.crypto||self.msCrypto)?function(){var r=self.crypto||self.msCrypto;return function(e){for(var t=new Uint8Array(e),n=0;n<e;n+=65536)r.getRandomValues(t.subarray(n,n+Math.min(e-n,65536)));return t}}:function(){return require("crypto").randomBytes})(),e=function(e){if(e.length<2)throw new Error("charset must have at least 2 characters");var t=function(n){if(!n)return t.entropy(128);for(var o="",a=e.length,f=256-256%a;n>0;)for(var h=r(Math.ceil(256*n/f)),i=0;i<h.length&&n>0;i++){var u=h[i];u<f&&(o+=e.charAt(u%a),n--)}return o};return t.entropy=function(r){return t(Math.ceil(r/(Math.log(e.length)/Math.LN2)))},t.charset=e,t},t="0123456789",n="abcdefghijklmnopqrstuvwxyz",o={numeric:t,hex:t+"abcdef",alphalower:n,alpha:n+n.toUpperCase(),alphanumeric:t+n+n.toUpperCase(),base64:t+n+n.toUpperCase()+"+/",url:t+n+n.toUpperCase()+"-_"},a=e(o.alphanumeric);for(var f in o)a[f]=e(o[f]);a.custom=e;var h={length:function(r){if(r().length!==r.entropy(128).length)throw new Error("Bad result for zero length");for(var e=1;e<32;e++)if(r(e).length!==e)throw new Error("Length differs: "+e)},chars:function(r){var e=Array.prototype.map.call(r.charset,function(r){return"\\u"+("0000"+r.charCodeAt(0).toString(16)).substr(-4)});if(!new RegExp("^["+e.join("")+"]+$").test(r(256)))throw new Error("Bad chars for "+r.charset)},entropy:function(r){var e=r.entropy(128).length;if(e*(Math.log(r.charset.length)/Math.LN2)<128)throw new Error("Wrong length for entropy: "+e)},uniqueness:function(r,e){for(var t={},n=0;n<(e?10:1e4);n++){var o=r();if(t[o])throw new Error("Repeated result: "+o);t[o]=!0}},bias:function(r,e){if(!e){for(var t="",n={},o=0;o<1e3;o++)t+=r(1e3);for(o=0;o<t.length;o++){var a=t.charAt(o);n[a]=(n[a]||0)+1}var f=t.length/r.charset.length;for(var h in n){var i=n[h]/f;if(i<.95||i>1.05)throw new Error('Biased "'+h+'": average is '+f+", got "+n[h]+" in "+r.charset)}}}};return a.test=function(r){for(var e in h){var t=h[e];for(var n in t(a,r),t(a.custom("abc"),r),o)t(a[n],r)}},"undefined"!=typeof module&&module.exports&&(module.exports=a),a}();

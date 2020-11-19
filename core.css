@@ -216,3 +216,6 @@ button:hover {
 .icon-wrap-text:before {
     content: '\e905';
 }
+a#version-number {
+    text-decoration: none;
+}
