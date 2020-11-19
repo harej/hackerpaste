@@ -62,7 +62,7 @@ const initLangSelector = () => {
 const initCode = () => {
   let skylink = location.hash.substr(1);
   if (skylink.length === 0) return;
-  isEncrypted = false;
+  var isEncrypted = false;
   if (skylink.length === 66) {
     isEncrypted = true;
     secretKey = skylink.substr(46);
@@ -117,6 +117,7 @@ const generateLink = (mode) => {
     .then((result) => {
       skylink = result.skylink;
       url = buildUrl(skylink, mode, secretKey);
+      window.location = url;
       showCopyBar(url);
     })
     .catch((error) => {
