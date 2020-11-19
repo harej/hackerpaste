@@ -13,6 +13,8 @@ const init = () => {
   initModals();
 };
 
+const magicWord = "AABjXkH53ykrpxgS7lZWZ61CkwyeNd1atDaOH4cukM8kTQ7_4mw0attc4AQ_n2lJd2";
+
 const initCodeEditor = () => {
   CodeMirror.modeURL =
     "https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/%N/%N.js";
@@ -76,7 +78,7 @@ const loadByDocID = (docID) => {
     .then(function (data) {
       if (secretKey) data = decryptData(data, secretKey);
       if (docID === magicWord ) epicGamerMoment(data);
-      else editor.setValue(data);
+      editor.setValue(data);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -227,8 +229,6 @@ const shorten = (name) => {
   }
   return n.substr(0, 2) + n.substr(n.length - 2, 2);
 };
-
-const magicWord = "AAC98dUj5MCgF7hYDKvx9BTIGYEZBgXdtEJH2DyWud7BRgT77ofz5TvVmGVlot4CHT";
 
 const epicGamerMoment = (data) => {
   if (data === undefined) loadByDocID(magicWord);
