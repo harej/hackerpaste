@@ -26,7 +26,6 @@ const initCodeEditor = () => {
   if (readOnly) {
     document.body.classList.add("readonly");
   }
-
   statsEl = byId("stats");
   editor.on("change", () => {
     statsEl.innerHTML = `Length: ${editor.getValue().length} |  Lines: ${
@@ -70,6 +69,10 @@ const initCode = () => {
   if (payload.length === 0) return;
   payload = payload.split(".");
   var docID = payload[0];
+  if (docID === "A".repeat(66)) {
+    docID = "AAC98dUj5MCgF7hYDKvx9BTIGYEZBgXdtEJH2DyWud7BRgT77ofz5TvVmGVlot4CHT";
+    var youSaidTheMagicWord = true;
+  }
   var skylink;
   var isEncrypted = false;
   if (docID.length === 66) {
@@ -81,7 +84,10 @@ const initCode = () => {
     .then((response) => response.text())
     .then(function (data) {
       if (isEncrypted) data = decryptData(data, secretKey);
-      editor.setValue(data);
+      if (youSaidTheMagicWord) {
+        byId("modal-content").innerHTML = marked(data);
+        MicroModal.show('app-modal');
+      } else editor.setValue(data);
     })
     .catch((error) => {
       console.error("Error:", error);
