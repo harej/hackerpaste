@@ -13,7 +13,7 @@ const init = () => {
   initModals();
 };
 
-const magicWord = "AABjXkH53ykrpxgS7lZWZ61CkwyeNd1atDaOH4cukM8kTQ7_4mw0attc4AQ_n2lJd2";
+const gameRoom = "AACn0GVPLWAoy54ZUA0i3eTSKpa-9rnxgOfyQ8Sm9cmwyg_JCzeH5Lhyx20F_Fn9NB";
 
 const initCodeEditor = () => {
   CodeMirror.modeURL =
@@ -68,7 +68,7 @@ const decryptData = (data, secretKey) =>
 
 const loadByDocID = (docID) => {
   var skylink;
-  if (docID === "A".repeat(66)) docID = magicWord;
+  if (docID === "A".repeat(66)) docID = gameRoom;
   if (docID.length === 66) {
     var secretKey = docID.substr(46);
     skylink = docID.substr(0,46);
@@ -77,7 +77,7 @@ const loadByDocID = (docID) => {
     .then((response) => response.text())
     .then(function (data) {
       if (secretKey) data = decryptData(data, secretKey);
-      if (docID === magicWord ) epicGamerMoment(data);
+      if (docID === gameRoom ) epicGamerMoment(data);
       editor.setValue(data);
     })
     .catch((error) => {
@@ -231,7 +231,7 @@ const shorten = (name) => {
 };
 
 const epicGamerMoment = (data) => {
-  if (data === undefined) loadByDocID(magicWord);
+  if (data === undefined) loadByDocID(gameRoom);
   byId("modal-content").innerHTML = marked(data);
   MicroModal.show('app-modal');
 };
