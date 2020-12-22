@@ -15,6 +15,36 @@ const init = () => {
 
 const gameRoom = "AACn0GVPLWAoy54ZUA0i3eTSKpa-9rnxgOfyQ8Sm9cmwyg_JCzeH5Lhyx20F_Fn9NB";
 
+const switchToLoggedIn = (message) => {
+  if (message == "login_success") {
+    document.getElementById("button-log-in").style.display = "none";
+    document.getElementById("button-log-out").style.display = "inline-block";
+    document.getElementById("button-username").style.display = "inline-block";
+    var username;
+    byId("modal-content").innerHTML = "<p>Setting up your Hacker Paste account...</p>";
+    MicroModal.show('app-modal');
+    skyid.getRegistry('username', function(response) {
+      if (response.entry === null) {
+        username = prompt("What should we call you?");
+        skyid.setRegistry('username', username, function(_) {
+          location.reload();
+        });
+      } else {
+        username = response.entry.data;
+        MicroModal.close('app-modal');
+      }
+      document.getElementById("username").textContent = username;
+    });
+  };
+};
+
+const switchToLoggedOut = () => {
+  skyid.sessionDestroy();
+  document.getElementById("button-log-in").style.display = "inline-block";
+  document.getElementById("button-log-out").style.display = "none";
+  document.getElementById("button-username").style.display = "none";
+};
+
 const initCodeEditor = () => {
   CodeMirror.modeURL =
     "https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/%N/%N.js";
@@ -239,6 +269,8 @@ const epicGamerMoment = (data) => {
 const byId = (id) => document.getElementById(id);
 
 init();
+
+
 
 // randomString function for secure password generation, minified using UglifyJS
 // https://gist.githubusercontent.com/dchest/751fd00ee417c947c252/raw/53c4e953b4748f4a46367fc1bce4aee8cfc4a1cb/randomString.js

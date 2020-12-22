@@ -219,3 +219,20 @@ button:hover {
 a#version-number {
     text-decoration: none;
 }
+
+/* CSS for Log in with SkyID Button */
+.skyid-button, .skyid-button:focus {
+    color: #fff;
+    background-color: #57b560;
+    border-radius: .25rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    outline:none;
+}
+
+.skyid-logo {
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 2px;
+}

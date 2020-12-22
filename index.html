@@ -57,8 +57,20 @@ npm/microtip@0.2.2/microtip.min.css
                     <h1 class="my-0">Hacker Paste <a href="#" onclick="epicGamerMoment()">4️⃣</a></h1>
                 </div>
                 <div class="col-auto">
+                    <button id="button-log-in" onclick="skyid.sessionStart()" class="skyid-button">
+                        <img src="SkyID_Logo_128_white.png" alt="SkyID" class="skyid-logo">
+                        Sign In with SkyID
+                    </button>
+                    <button id="button-username" onclick="alert('Nothing to see here.')" class="skyid-button" style="display:none;">
+                        <img src="SkyID_Logo_128_white.png" alt="SkyID" class="skyid-logo">
+                        <span id="username"></span>
+                    </button>
                 </div>
-                <div class="col"></div>
+                <div class="col">
+                    <button id="button-log-out" onclick="switchToLoggedOut()" style="display:none;">
+                        Sign Out
+                    </button>
+                </div>
                 <div class="col-auto my-1">
                     <select id="language"></select>
                 </div>
@@ -132,5 +144,10 @@ npm/marked/marked.min.js,
 npm/crypto-js@4.0.0/crypto-js.min.js
 -->
         <script src="core.js"></script>
+        <script src="https://sky-id.hns.siasky.net/skyid.js"></script>
+        <script>
+            var skyid = new SkyID('Hacker Paste', switchToLoggedIn, {devMode: false});
+            if (skyid.seed != "") switchToLoggedIn("login_success");
+        </script>
     </body>
 </html>
