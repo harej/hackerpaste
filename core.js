@@ -107,8 +107,9 @@ const loadByDocID = (docID) => {
     .then((response) => response.text())
     .then(function (data) {
       if (secretKey) data = decryptData(data, secretKey);
-      if (docID === gameRoom ) epicGamerMoment(data);
-      editor.setValue(data);
+      if (docID === gameRoom) {
+        byId("editor").innerHTML = "<div style='margin-left:1em;'>" + marked(data) + "</div>";
+      } else editor.setValue(data);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -262,8 +263,6 @@ const shorten = (name) => {
 
 const epicGamerMoment = (data) => {
   if (data === undefined) loadByDocID(gameRoom);
-  byId("modal-content").innerHTML = marked(data);
-  MicroModal.show('app-modal');
 };
 
 const byId = (id) => document.getElementById(id);
