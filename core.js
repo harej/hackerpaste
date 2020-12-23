@@ -187,8 +187,8 @@ const generateLink = (mode) => {
     .then((result) => {
       var skylink = result.skylink;
       var url = buildUrl(skylink, mode, secretKey);
-      window.location = url;
-      showCopyBar(url);
+      window.location = url.url;
+      showCopyBar(url.content);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -243,9 +243,9 @@ const buildUrl = (skylink, mode, secretKey) => {
   const url = base + "#" + skylink + secretKey + lang;
   if (mode === "iframe") {
     const height = editor.doc.height + 45;
-    return `<iframe width="100%" height="${height}" frameborder="0" src="${url}"></iframe>`;
+    return {url: url, content: `<iframe width="100%" height="${height}" frameborder="0" src="${url}"></iframe>`};
   }
-  return url;
+  return {url: url, content: url};
 };
 
 const slugify = (str) =>
