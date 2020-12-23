@@ -243,12 +243,7 @@ const buildUrl = (skylink, mode, secretKey) => {
   const url = base + "#" + skylink + secretKey + lang;
   if (mode === "iframe") {
     const height = editor.doc.height + 45;
-    return `<iframe
-      width="100%"
-      height="${height}"
-      frameborder="0"
-      src="${url}">
-      </iframe>`;
+    return `<iframe width="100%" height="${height}" frameborder="0" src="${url}"></iframe>`;
   }
   return url;
 };
