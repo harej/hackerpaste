@@ -1,5 +1,4 @@
 /*jshint esversion: 6 */
-
 let editor = null;
 let select = null;
 let clipboard = null;
@@ -13,13 +12,13 @@ const init = () => {
   initModals();
 };
 
-const gameRoom = "AACn0GVPLWAoy54ZUA0i3eTSKpa-9rnxgOfyQ8Sm9cmwyg_JCzeH5Lhyx20F_Fn9NB";
+const gameRoom = "AAAuytkzAUZHtJfNKENEj4A9HAvne4fGaKBLONkWGQ01vgvn6zv0Zd2HQGT89wuAy1";
 
 const switchToLoggedIn = (message) => {
   if (message == "login_success") {
-    document.getElementById("button-log-in").style.display = "none";
-    document.getElementById("button-log-out").style.display = "inline-block";
-    document.getElementById("button-username").style.display = "inline-block";
+    byId("button-log-in").style.display = "none";
+    byId("button-log-out").style.display = "inline-block";
+    byId("button-username").style.display = "inline-block";
     var username;
     byId("modal-content").innerHTML = "<p>Setting up your Hacker Paste account...</p>";
     MicroModal.show('app-modal');
@@ -33,16 +32,16 @@ const switchToLoggedIn = (message) => {
         username = response.entry.data;
         MicroModal.close('app-modal');
       }
-      document.getElementById("username").textContent = username;
+      byId("username").textContent = username;
     });
   };
 };
 
 const switchToLoggedOut = () => {
   skyid.sessionDestroy();
-  document.getElementById("button-log-in").style.display = "inline-block";
-  document.getElementById("button-log-out").style.display = "none";
-  document.getElementById("button-username").style.display = "none";
+  byId("button-log-in").style.display = "inline-block";
+  byId("button-log-out").style.display = "none";
+  byId("button-username").style.display = "none";
 };
 
 const initCodeEditor = () => {
@@ -73,11 +72,17 @@ const initLangSelector = () => {
     data: CodeMirror.modeInfo.map((e) => ({
       text: e.name,
       value: shorten(e.name),
-      data: { mime: e.mime, mode: e.mode },
+      data: {
+        mime: e.mime,
+        mode: e.mode
+      },
     })),
     showContent: "down",
     onChange: (e) => {
-      const language = e.data || { mime: null, mode: null };
+      const language = e.data || {
+        mime: null,
+        mode: null
+      };
       editor.setOption("mode", language.mime);
       CodeMirror.autoLoadMode(editor, language.mode);
       document.title =
@@ -89,26 +94,32 @@ const initLangSelector = () => {
 
   // Set lang selector
   const l = location.hash.substr(1).split(".")[1] ||
-            new URLSearchParams(window.location.search).get("l");
+    new URLSearchParams(window.location.search).get("l");
   select.set(l ? decodeURIComponent(l) : shorten("Plain Text"));
 };
 
 const decryptData = (data, secretKey) =>
   CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(data, secretKey));
 
+const loadView = (viewContent) => {
+  editor.setOption('readOnly', true);
+  document.getElementsByClassName("CodeMirror-cursors")[0].setAttribute("style", "display:none;");
+  document.getElementsByClassName("CodeMirror-code")[0].innerHTML = "<div style='font-size:110%; margin:0;'>" + viewContent + "</div>";
+};
+
 const loadByDocID = (docID) => {
   var skylink;
   if (docID === "A".repeat(66)) docID = gameRoom;
   if (docID.length === 66) {
     var secretKey = docID.substr(46);
-    skylink = docID.substr(0,46);
+    skylink = docID.substr(0, 46);
   } else skylink = docID;
   fetch(`/${skylink}`)
     .then((response) => response.text())
-    .then(function (data) {
+    .then(function(data) {
       if (secretKey) data = decryptData(data, secretKey);
       if (docID === gameRoom) {
-        byId("editor").innerHTML = "<div style='margin-left:1em;'>" + marked(data) + "</div>";
+        loadView(marked(data));
       } else editor.setValue(data);
     })
     .catch((error) => {
@@ -151,16 +162,18 @@ const generateLink = (mode) => {
   const data = editor.getValue();
   const encryptedData = CryptoJS.AES.encrypt(data, secretKey);
   var blob = new Blob(
-    [encryptedData],
-    { type: "text/plain", encoding: "utf-8" }
+    [encryptedData], {
+      type: "text/plain",
+      encoding: "utf-8"
+    }
   );
   var formData = new FormData();
   formData.append("file", blob);
   const uuid = generateUUID();
   fetch(`/skynet/skyfile/${uuid}?filename=paste.txt`, {
-    method: "POST",
-    body: formData,
-  })
+      method: "POST",
+      body: formData,
+    })
     .then((response) => response.json())
     .then((result) => {
       var skylink = result.skylink;
@@ -233,13 +246,13 @@ const buildUrl = (skylink, mode, secretKey) => {
 
 const slugify = (str) =>
   str
-    .trim()
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/\+/g, "-p")
-    .replace(/#/g, "-sharp")
-    .replace(/[^\w\-]+/g, "");
+  .trim()
+  .toString()
+  .toLowerCase()
+  .replace(/\s+/g, "-")
+  .replace(/\+/g, "-p")
+  .replace(/#/g, "-sharp")
+  .replace(/[^\w\-]+/g, "");
 
 const shorten = (name) => {
   let n = slugify(name).replace("script", "-s").replace("python", "py");
@@ -270,8 +283,7 @@ const byId = (id) => document.getElementById(id);
 init();
 
 
-
 // randomString function for secure password generation, minified using UglifyJS
 // https://gist.githubusercontent.com/dchest/751fd00ee417c947c252/raw/53c4e953b4748f4a46367fc1bce4aee8cfc4a1cb/randomString.js
 // --------------------
-var randomString=function(){var r=("undefined"!=typeof self&&(self.crypto||self.msCrypto)?function(){var r=self.crypto||self.msCrypto;return function(e){for(var t=new Uint8Array(e),n=0;n<e;n+=65536)r.getRandomValues(t.subarray(n,n+Math.min(e-n,65536)));return t}}:function(){return require("crypto").randomBytes})(),e=function(e){if(e.length<2)throw new Error("charset must have at least 2 characters");var t=function(n){if(!n)return t.entropy(128);for(var o="",a=e.length,f=256-256%a;n>0;)for(var h=r(Math.ceil(256*n/f)),i=0;i<h.length&&n>0;i++){var u=h[i];u<f&&(o+=e.charAt(u%a),n--)}return o};return t.entropy=function(r){return t(Math.ceil(r/(Math.log(e.length)/Math.LN2)))},t.charset=e,t},t="0123456789",n="abcdefghijklmnopqrstuvwxyz",o={numeric:t,hex:t+"abcdef",alphalower:n,alpha:n+n.toUpperCase(),alphanumeric:t+n+n.toUpperCase(),base64:t+n+n.toUpperCase()+"+/",url:t+n+n.toUpperCase()+"-_"},a=e(o.alphanumeric);for(var f in o)a[f]=e(o[f]);a.custom=e;var h={length:function(r){if(r().length!==r.entropy(128).length)throw new Error("Bad result for zero length");for(var e=1;e<32;e++)if(r(e).length!==e)throw new Error("Length differs: "+e)},chars:function(r){var e=Array.prototype.map.call(r.charset,function(r){return"\\u"+("0000"+r.charCodeAt(0).toString(16)).substr(-4)});if(!new RegExp("^["+e.join("")+"]+$").test(r(256)))throw new Error("Bad chars for "+r.charset)},entropy:function(r){var e=r.entropy(128).length;if(e*(Math.log(r.charset.length)/Math.LN2)<128)throw new Error("Wrong length for entropy: "+e)},uniqueness:function(r,e){for(var t={},n=0;n<(e?10:1e4);n++){var o=r();if(t[o])throw new Error("Repeated result: "+o);t[o]=!0}},bias:function(r,e){if(!e){for(var t="",n={},o=0;o<1e3;o++)t+=r(1e3);for(o=0;o<t.length;o++){var a=t.charAt(o);n[a]=(n[a]||0)+1}var f=t.length/r.charset.length;for(var h in n){var i=n[h]/f;if(i<.95||i>1.05)throw new Error('Biased "'+h+'": average is '+f+", got "+n[h]+" in "+r.charset)}}}};return a.test=function(r){for(var e in h){var t=h[e];for(var n in t(a,r),t(a.custom("abc"),r),o)t(a[n],r)}},"undefined"!=typeof module&&module.exports&&(module.exports=a),a}();
+const randomString=function(){var r=("undefined"!=typeof self&&(self.crypto||self.msCrypto)?function(){var r=self.crypto||self.msCrypto;return function(e){for(var t=new Uint8Array(e),n=0;n<e;n+=65536)r.getRandomValues(t.subarray(n,n+Math.min(e-n,65536)));return t}}:function(){return require("crypto").randomBytes})(),e=function(e){if(e.length<2)throw new Error("charset must have at least 2 characters");var t=function(n){if(!n)return t.entropy(128);for(var o="",a=e.length,f=256-256%a;n>0;)for(var h=r(Math.ceil(256*n/f)),i=0;i<h.length&&n>0;i++){var u=h[i];u<f&&(o+=e.charAt(u%a),n--)}return o};return t.entropy=function(r){return t(Math.ceil(r/(Math.log(e.length)/Math.LN2)))},t.charset=e,t},t="0123456789",n="abcdefghijklmnopqrstuvwxyz",o={numeric:t,hex:t+"abcdef",alphalower:n,alpha:n+n.toUpperCase(),alphanumeric:t+n+n.toUpperCase(),base64:t+n+n.toUpperCase()+"+/",url:t+n+n.toUpperCase()+"-_"},a=e(o.alphanumeric);for(var f in o)a[f]=e(o[f]);a.custom=e;var h={length:function(r){if(r().length!==r.entropy(128).length)throw new Error("Bad result for zero length");for(var e=1;e<32;e++)if(r(e).length!==e)throw new Error("Length differs: "+e)},chars:function(r){var e=Array.prototype.map.call(r.charset,function(r){return"\\u"+("0000"+r.charCodeAt(0).toString(16)).substr(-4)});if(!new RegExp("^["+e.join("")+"]+$").test(r(256)))throw new Error("Bad chars for "+r.charset)},entropy:function(r){var e=r.entropy(128).length;if(e*(Math.log(r.charset.length)/Math.LN2)<128)throw new Error("Wrong length for entropy: "+e)},uniqueness:function(r,e){for(var t={},n=0;n<(e?10:1e4);n++){var o=r();if(t[o])throw new Error("Repeated result: "+o);t[o]=!0}},bias:function(r,e){if(!e){for(var t="",n={},o=0;o<1e3;o++)t+=r(1e3);for(o=0;o<t.length;o++){var a=t.charAt(o);n[a]=(n[a]||0)+1}var f=t.length/r.charset.length;for(var h in n){var i=n[h]/f;if(i<.95||i>1.05)throw new Error('Biased "'+h+'": average is '+f+", got "+n[h]+" in "+r.charset)}}}};return a.test=function(r){for(var e in h){var t=h[e];for(var n in t(a,r),t(a.custom("abc"),r),o)t(a[n],r)}},"undefined"!=typeof module&&module.exports&&(module.exports=a),a}();
