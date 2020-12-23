@@ -1,19 +1,19 @@
 <!DOCTYPE html>
+
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<head>
+    <meta charset="UTF-8">
+    <meta content=
+    "width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <link href="apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+    <link href="favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
+    <link href="favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
+    <link href="site.webmanifest" rel="manifest">
 
-        <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-        <link rel="manifest" href="site.webmanifest">
-
-        <title>Hacker Paste – Encrypted Trustless Text Snippets Done In-Browser</title>
-        <link rel="stylesheet" type="text/css" href="vendor.css"
-        />
-<!--
+    <title>Hacker Paste – The Secure and Decentralized Paste Bin</title>
+    <link href="vendor.css" rel="stylesheet" type="text/css"><!--
 https://cdn.jsdelivr.net/combine/
 npm/bootstrap@4.4.1/dist/css/bootstrap-grid.min.css,
 npm/slim-select@1.25.0/dist/slimselect.min.css,
@@ -22,113 +22,131 @@ npm/codemirror@5.58.1/addon/scroll/simplescrollbars.css,
 npm/codemirror@5.58.1/theme/dracula.min.css,
 npm/microtip@0.2.2/microtip.min.css
 -->
-        <link rel="stylesheet" type="text/css" href="core.css" />
-        <meta
-            name="description"
-            property="og:description"
-            content="Hacker Paste lets you share encrypted text and code snippets through Skynet, a decentralized content delivery network."
-        />
-        <meta property="og:title" content="Hacker Paste – Encrypted Trustless Text Snippets Done In-Browser" />
-        <meta property="og:type" content="website" />
-    </head>
-    <body class="m-0">
-        <script>
-            const readOnly = window.location !== window.parent.location || new URLSearchParams(window.location.search).has('readonly');
-            if (readOnly) {
-                document.body.classList.add('readonly');
-            }
-        </script>
-        <div id="copy" class="container-fluid hidden shadow-bottom hide-readonly">
-            <div class="row my-1">
-                <div class="col my-1">
-                    <input type="text" value="copy me" id="copy-link" class="px-2" onclick="this.setSelectionRange(0, this.value.length)" />
-                </div>
-                <div class="col-auto my-1">
-                    <button class="clipboard py-1 px-2 mx-1" id="copy-btn" data-clipboard-target="#copy-link" type="button">
-                        Copy
-                    </button>
-                    <button class="py-1 px-2 mx-1" onclick="hideCopyBar(false)" type="button">Cancel</button>
-                </div>
-            </div>
-        </div>
-        <div id="controls" class="container-fluid shadow-bottom hide-readonly">
-            <div class="row align-items-center justify-content-end my-1">
-                <div class="col-auto mb-1">
-                    <h1 class="my-0"><a href="#" onclick="backToEditor()">Hacker Paste</a> <a href="#" onclick="epicGamerMoment()">4️⃣</a></h1>
-                </div>
-                <div class="col-auto">
-                    <button id="button-log-in" onclick="skyid.sessionStart()" class="skyid-button">
-                        <img src="SkyID_Logo_128_white.png" alt="SkyID" class="skyid-logo">
-                        Sign In with SkyID
-                    </button>
-                    <button id="button-username" onclick="alert('Nothing to see here.')" class="skyid-button" style="display:none;">
-                        <img src="SkyID_Logo_128_white.png" alt="SkyID" class="skyid-logo">
-                        <span id="username"></span>
-                    </button>
-                </div>
-                <div class="col">
-                    <button id="button-log-out" onclick="switchToLoggedOut()" style="display:none;">
-                        Sign Out
-                    </button>
-                </div>
-                <div class="col-auto my-1">
-                    <select id="language"></select>
-                </div>
-                <div class="col-auto">
-                    <button
-                        onclick="enableLineWrapping()"
-                        type="button"
-                        id="enable-line-wrapping"
-                        aria-label="Enable line wrapping"
-                        data-microtip-position="bottom"
-                        role="tooltip"
-                    >
-                        <span class="icon-notes"></span>
-                    </button>
-                    <button
-                        onclick="disableLineWrapping()"
-                        type="button"
-                        id="disable-line-wrapping"
-                        aria-label="Disable line wrapping"
-                        data-microtip-position="bottom"
-                        role="tooltip"
-                        class="hidden"
-                    >
-                        <span class="icon-wrap-text"></span>
-                    </button>
-                </div>
-                <div class="col-auto">
-                    <button class="py-1 px-2 mx-0 my-1" onclick="generateLink('url')" type="button">
-                        Generate link
-                    </button>
-                    <button class="py-1 px-2 mx-0 my-1" onclick="generateLink('iframe')" type="button">Embed</button>
-                </div>
-            </div>
-        </div>
-        <div id="progress"></div>
-        <div id="editor"></div>
-        <footer id="footer" class="shadow-top container-fluid">
-            <div class="row my-1">
-                <div class="col mono hide-readonly" id="stats">Length: 0 | Lines: 1</div>
-                <div class="col mono show-readonly">Powered by Hacker Paste</div>
-                <div class="col-auto mono show-readonly">
-                    <a href="javascript:void(0)" onclick="openInNewTab()">
-                        <span class="icon-edit"></span>
-                        Edit
-                    </a>
-                </div>
-            <span class="col-auto mono"><a href="https://github.com/harej/hackerpaste" rel="noopener" target="_blank" class="mx-3">App Source on GitHub</a></span>
-            </div>
-        </footer>
-        <div id="app-modal" class="modal">
-            <div tabindex="-1" data-micromodal-close class="modal-overlay">
-                <div id="modal-content" role="dialog" class="modal-content shadow-bottom p-3 m-3" data-micromodal-close>
-                </div>
-            </div>
-        </div>
+    <link href="core.css" rel="stylesheet" type="text/css">
+    <meta content=
+    "Hacker Paste lets you share encrypted text and code snippets through Skynet, a decentralized content delivery network."
+    name="description" property="og:description">
+    <meta content=
+    "Hacker Paste – The Secure and Decentralized Paste Bin" property=
+    "og:title">
+    <meta content="website" property="og:type">
+</head>
 
-        <script src="vendor.js"></script>
-<!--
+<body class="m-0">
+    <script>
+        const readOnly = window.location !== window.parent.location || new URLSearchParams(window.location.search).has('readonly');
+        if (readOnly) {
+            document.body.classList.add('readonly');
+        }
+    </script>
+
+    <div class="container-fluid hidden shadow-bottom hide-readonly" id="copy">
+        <div class="row my-1">
+            <div class="col my-1">
+                <input class="px-2" id="copy-link" onclick=
+                "this.setSelectionRange(0, this.value.length)" type="text" value="copy me">
+            </div>
+
+
+            <div class="col-auto my-1">
+                <button class="clipboard py-1 px-2 mx-1" data-clipboard-target="#copy-link"
+                id="copy-btn" type="button">Copy</button> <button class="py-1 px-2 mx-1"
+                onclick="hideCopyBar(false)" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid shadow-bottom hide-readonly" id="controls">
+        <div class="row align-items-center justify-content-end my-1">
+            <div class="col-auto mb-1">
+                <h1 class="my-0"><a href="#" onclick="backToEditor()">Hacker Paste</a>
+                <a href="#" onclick="epicGamerMoment()">4️⃣</a></h1>
+            </div>
+
+
+            <div class="col-auto">
+                <button class="skyid-button" id="button-log-in" onclick=
+                "skyid.sessionStart()"><img alt="SkyID" class="skyid-logo" src=
+                "SkyID_Logo_128_white.png"> Sign In with SkyID</button> <button class=
+                "skyid-button" id="button-username" onclick="alert('Nothing to see here.')"
+                style="display:none;"><img alt="SkyID" class="skyid-logo" src=
+                "SkyID_Logo_128_white.png"> <span id="username"></span></button>
+            </div>
+
+
+            <div class="col">
+                <button id="button-log-out" onclick="switchToLoggedOut()" style=
+                "display:none;">Sign Out</button>
+            </div>
+
+
+            <div class="col-auto my-1">
+                <select id="language">
+                </select>
+            </div>
+
+
+            <div class="col-auto">
+                <button aria-label="Enable line wrapping" data-microtip-position="bottom"
+                id="enable-line-wrapping" onclick="enableLineWrapping()" role="tooltip"
+                type="button"><span class="icon-notes"></span></button> <button aria-label=
+                "Disable line wrapping" class="hidden" data-microtip-position="bottom" id=
+                "disable-line-wrapping" onclick="disableLineWrapping()" role="tooltip"
+                type="button"><span class="icon-wrap-text"></span></button>
+            </div>
+
+
+            <div class="col-auto">
+                <button class="py-1 px-2 mx-0 my-1" onclick="generateLink('iframe')" type=
+                "button">Embed</button>
+                <button class="py-1 px-2 mx-0 my-1" onclick="generateLink('url')" type=
+                "button">Save Snapshot</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="progress">
+    </div>
+
+
+    <div id="editor">
+    </div>
+
+
+    <footer class="shadow-top container-fluid" id="footer">
+        <div class="row my-1">
+            <div class="col mono hide-readonly" id="stats">
+                Length: 0 | Lines: 1
+            </div>
+
+
+            <div class="col mono show-readonly">
+                Powered by Hacker Paste
+            </div>
+
+
+            <div class="col-auto mono show-readonly">
+                <a href="javascript:void(0)" onclick="openInNewTab()"><span class=
+                "icon-edit"></span> Edit</a>
+            </div>
+            <span class="col-auto mono"><a class="mx-3" href=
+            "https://github.com/harej/hackerpaste" rel="noopener" target="_blank">App
+            Source on GitHub</a></span>
+        </div>
+    </footer>
+
+
+    <div class="modal" id="app-modal">
+        <div class="modal-overlay" data-micromodal-close="" tabindex="-1">
+            <div class="modal-content shadow-bottom p-3 m-3" data-micromodal-close=""
+            id="modal-content" role="dialog">
+            </div>
+        </div>
+    </div>
+    <script src="vendor.js">
+    </script> <!--
 https://cdn.jsdelivr.net/combine/
 npm/slim-select@1.25.0/dist/slimselect.min.js,
 npm/clipboard@2/dist/clipboard.min.js,
@@ -143,11 +161,12 @@ npm/codemirror@5.58.1/mode/meta.min.js,
 npm/marked/marked.min.js,
 npm/crypto-js@4.0.0/crypto-js.min.js
 -->
-        <script src="core.js"></script>
-        <script src="https://sky-id.hns.siasky.net/skyid.js"></script>
-        <script>
-            var skyid = new SkyID('Hacker Paste', switchToLoggedIn, {devMode: false});
-            if (skyid.seed != "") switchToLoggedIn("login_success");
-        </script>
-    </body>
+     
+    <script src="core.js"></script>
+    <script src="https://sky-id.hns.siasky.net/skyid.js"></script>
+    <script>
+        var skyid = new SkyID('Hacker Paste', switchToLoggedIn, {devMode: false});
+        if (skyid.seed != "") switchToLoggedIn("login_success");
+    </script>
+</body>
 </html>
