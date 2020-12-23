@@ -110,6 +110,11 @@ const loadView = (viewContent) => {
     "<div style='font-size:110%; margin:0;'>" + viewContent + "</div>";
 };
 
+const backToEditor = () => {
+  byId("editor").innerHTML = "";
+  initCodeEditor();
+}
+
 const loadByDocID = (docID) => {
   var skylink;
   if (docID === "A".repeat(66)) docID = gameRoom;
@@ -164,6 +169,7 @@ const generateLink = (mode) => {
   const secretKey = randomString.url(20);
   const data = editor.getValue();
   const encryptedData = CryptoJS.AES.encrypt(data, secretKey);
+  showCopyBar('Uploading...');
   var blob = new Blob(
     [encryptedData], {
       type: "text/plain",
@@ -344,12 +350,12 @@ const randomString = function() {
           -4)
       });
       if (!new RegExp("^[" + e.join("") + "]+$").test(r(256)))
-      throw new Error("Bad chars for " + r.charset)
+        throw new Error("Bad chars for " + r.charset)
     },
     entropy: function(r) {
       var e = r.entropy(128).length;
       if (e * (Math.log(r.charset.length) / Math.LN2) < 128)
-      throw new Error("Wrong length for entropy: " + e)
+        throw new Error("Wrong length for entropy: " + e)
     },
     uniqueness: function(r, e) {
       for (var t = {}, n = 0; n < (e ? 10 : 1e4); n++) {
