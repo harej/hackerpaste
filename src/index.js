@@ -1,11 +1,11 @@
-import blake        from 'blakejs';
-import MicroModal   from 'micromodal';
-import marked       from 'marked';
+/*jshint esversion: 8 */
 import ClipboardJS  from 'clipboard';
-import SlimSelect   from 'slim-select';
-import CryptoJS     from 'crypto-js';
-import randomString from './randomString.js';
 import CodeMirror   from 'codemirror';
+import CryptoJS     from 'crypto-js';
+import marked       from 'marked';
+import MicroModal   from 'micromodal';
+import SlimSelect   from 'slim-select';
+import randomString from './randomString.js';
 import 'codemirror/addon/mode/loadmode';
 import 'codemirror/addon/mode/overlay';
 import 'codemirror/addon/mode/multiplex';
@@ -167,7 +167,7 @@ import 'codemirror/mode/z80/z80';
         }
         byId("username").textContent = username;
       });
-    };
+    }
   };
 
   var skyid = new SkyID('Hacker Paste', switchToLoggedIn, {
@@ -387,7 +387,7 @@ import 'codemirror/mode/z80/z80';
         skyid.hideOverlay(skyid.opts);
       }
     });
-  };
+  }
 
   const loadSkylink = (skylink, secretKey) => {
     fetch(`/${skylink}`)
@@ -444,13 +444,14 @@ import 'codemirror/mode/z80/z80';
           loadSkylink(skylink, secretKey);
         })
         .catch((error) => {
-          console.error(error)
+          console.error(error);
         });
     } else alert('This is not a valid paste link.');
-  }
+  };
 
   const generateLink = (mode) => {
     let secretKey;
+    let retrievalString;
     if (mode === 'mypastes') {
       secretKey = persistentSecretKey || randomString.url(20);
       persistentSecretKey = secretKey;
@@ -476,7 +477,7 @@ import 'codemirror/mode/z80/z80';
       })
       .then((response) => response.json())
       .then((result) => {
-        if (mode !== 'mypastes') var retrievalString = result.skylink;
+        if (mode !== 'mypastes') retrievalString = result.skylink;
         else retrievalString = hexToBase64(skyid.userId + '00');
         var url = buildUrl(retrievalString, mode, secretKey);
         if (mode === 'mypastes') postFileToRegistry(result.skylink,
@@ -484,7 +485,7 @@ import 'codemirror/mode/z80/z80';
         else {
           window.location = url.url;
           showCopyBar(url.content);
-        };
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -500,7 +501,7 @@ import 'codemirror/mode/z80/z80';
     if (mode === "iframe") {
       const height = editor.doc.height + 45;
       let content =
-        `<iframe width="100%" height="${height}" frameborder="0" src="${url}"></iframe>`
+        `<iframe width="100%" height="${height}" frameborder="0" src="${url}"></iframe>`;
       return {
         url: url,
         content: content
