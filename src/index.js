@@ -222,8 +222,6 @@ import 'codemirror/mode/z80/z80';
       lineWrapping: false,
       scrollbarStyle: "simple",
     });
-    editor.modeURL =
-      "https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/%N/%N.js";
     if (readOnly) {
       document.body.classList.add("readonly");
     }
@@ -405,24 +403,6 @@ import 'codemirror/mode/z80/z80';
       });
   };
 
-  // https://github.com/NebulousLabs/skynet-js/blob/master/src/crypto.ts
-  const encodeNumber = (num) => {
-    const encoded = new Uint8Array(8);
-    for (let index = 0; index < encoded.length; index++) {
-      const byte = num & 0xff;
-      encoded[index] = byte;
-      num = num >> 8;
-    }
-    return encoded;
-  };
-
-  const createDataKey = (toHash) => {
-    const encoded = new Uint8Array(8 + toHash.length);
-    encoded.set(encodeNumber(toHash.length));
-    encoded.set(Uint8Array.from(Buffer.from(toHash)), 8);
-    return blake.blake2bHex(encoded, null, 32);
-  };
-
   const loadByDocID = (docID) => {
     // A `docID` is a document's retrieval string plus its decryption string.
     // A file suffix for syntax highlighting does not count as part of the docID.
@@ -463,7 +443,9 @@ import 'codemirror/mode/z80/z80';
           skylink = result.entry.data;
           loadSkylink(skylink, secretKey);
         })
-        .catch((error) => { console.error(error) });
+        .catch((error) => {
+          console.error(error)
+        });
     } else alert('This is not a valid paste link.');
   }
 
