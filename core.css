@@ -14,14 +14,22 @@ body {
 
 #editor {
     flex-grow: 1;
-    margin-top: -3px;
+    margin-top:0.4em;
     overflow: auto;
+}
+
+footer {
+    background-color: #3b3b47 !important;
+}
+
+#controls,
+#copy {
+    background-color: #282a36;
 }
 
 #controls,
 #copy,
 footer {
-    background-color: #3b3b47;
     z-index: 10;
 }
 
@@ -73,7 +81,7 @@ a:focus {
     font-family: JetBrainsMono, sans-serif;
 }
 h1 {
-    font: normal 24px JetBrainsMono, sans-serif;
+    font: normal 22px JetBrainsMono, sans-serif;
     white-space: nowrap;
 }
 .mono {
