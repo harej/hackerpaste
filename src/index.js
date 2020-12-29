@@ -151,7 +151,7 @@ import 'codemirror/mode/z80/z80';
       byId("button-log-in").style.display = "none";
       byId("button-log-out").style.display = "inline-block";
       byId("button-username").style.display = "inline-block";
-      //byId("save-to-my-pastes-button").style.display = "inline-block";
+      byId("save-to-my-pastes-button").style.display = "inline-block";
       var username;
       byId("modal-content").innerHTML =
         "<p>Setting up your Hacker Paste account...</p>";
@@ -181,7 +181,7 @@ import 'codemirror/mode/z80/z80';
     byId("button-log-in").style.display = "inline-block";
     byId("button-log-out").style.display = "none";
     byId("button-username").style.display = "none";
-    //byId("save-to-my-pastes-button").style.display = "none";
+    byId("save-to-my-pastes-button").style.display = "none";
   };
 
   const init = () => {
@@ -537,7 +537,7 @@ import 'codemirror/mode/z80/z80';
   clickListener("disable-line-wrapping", disableLineWrapping);
   clickListener("embed-button", generateEmbed);
   clickListener("save-snapshot-button", generateSnapshotUrl);
-  //clickListener("save-to-my-pastes-button", generatePersistentUrl);
+  clickListener("save-to-my-pastes-button", generatePersistentUrl);
   clickListener("button-username", loadMyPastes);
 
   init();
