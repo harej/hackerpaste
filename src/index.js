@@ -134,13 +134,17 @@ import 'codemirror/mode/yaml/yaml';
 import 'codemirror/mode/yaml-frontmatter/yaml-frontmatter';
 import 'codemirror/mode/z80/z80';
 
-(function() {
+(() => {
 
-  let editor = null;
-  let select = null;
-  let clipboard = null;
-  let statsEl = null;
-  let persistentSecretKey = null;
+  let clipboard        = null;
+  let docLabel         = null;
+  let editor           = null;
+  let myPastes         = null;
+  let persistentDocKey = null;
+  let pubkey           = null;
+  let select           = null;
+  let statsEl          = null;
+  let username         = null;
 
   const byId = (id) => document.getElementById(id);
 
@@ -152,7 +156,6 @@ import 'codemirror/mode/z80/z80';
       byId("button-log-out").style.display = "inline-block";
       byId("button-username").style.display = "inline-block";
       byId("save-to-my-pastes-button").style.display = "inline-block";
-      var username;
       byId("modal-content").innerHTML =
         "<p>Setting up your Hacker Paste account...</p>";
       MicroModal.show('app-modal');
@@ -163,14 +166,31 @@ import 'codemirror/mode/z80/z80';
             location.reload());
         } else {
           username = response.entry.data;
-          MicroModal.close('app-modal');
+          skyid.getProfile((response2) => {
+            response2 = JSON.parse(response2);
+            pubkey = response2.dapps["Hacker Paste"].publicKey;
+            byId("username").textContent = username;
+            skyid.getJSON('hackerpaste:my-pastes', (response3) => {
+              if (response3 !== "") {
+                myPastes = decryptJSONToObject(response3);
+                MicroModal.close('app-modal');
+              } else {
+                let noteToSelf = getPubkeyBasedRetrievalString(
+                  pubkey) + generateDocKey();
+                let defaultContent =
+                  {documents:[{label:"Note to Self",docID:noteToSelf}]};
+                defaultContent = encryptObjectToJSON(defaultContent);
+                skyid.setJSON('hackerpaste:my-pastes',
+                  defaultContent, () => location.reload());
+              }
+            });
+          });
         }
-        byId("username").textContent = username;
       });
     }
   };
 
-  var skyid = new SkyID('Hacker Paste', switchToLoggedIn, {
+  let skyid = new SkyID('Hacker Paste', switchToLoggedIn, {
     devMode: false
   });
 
@@ -196,7 +216,7 @@ import 'codemirror/mode/z80/z80';
     let payload = location.hash.substr(1);
     if (payload.length === 0) return;
     payload = payload.split(".");
-    var docID = payload[0];
+    let docID = payload[0];
     loadByDocID(docID);
   };
 
@@ -214,7 +234,8 @@ import 'codemirror/mode/z80/z80';
   };
 
   const initCodeEditor = () => {
-    persistentSecretKey = null;
+    persistentDocKey = null;
+    docLabel = null;
     editor = new CodeMirror(byId("editor"), {
       lineNumbers: true,
       theme: "dracula",
@@ -339,8 +360,21 @@ import 'codemirror/mode/z80/z80';
   const gameRoom =
     "AAAuytkzAUZHtJfNKENEj4A9HAvne4fGaKBLONkWGQ01vgvn6zv0Zd2HQGT89wuAy1";
 
-  const decryptData = (data, secretKey) =>
-    CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(data, secretKey));
+  const encryptData = (data, docKey) => CryptoJS.AES.encrypt(data, docKey);
+
+  const decryptData = (data, docKey) =>
+    CryptoJS.enc.Utf8.stringify(CryptoJS.AES.decrypt(data, docKey));
+
+  const encryptObjectToJSON = (data) => {
+    data = JSON.stringify(data);
+    let encryptedData = encryptData(data, skyid.seed);
+    data = {encrypted:encryptedData.toString()};
+    data = JSON.stringify(data);
+    return data;
+  };
+
+  const decryptJSONToObject = (data) =>
+    JSON.parse(decryptData(JSON.parse(data).encrypted, skyid.seed));
 
   // https://gist.github.com/GeorgioWan/16a7ad2a255e8d5c7ed1aca3ab4aacec
   const hexToBase64 = (str) => {
@@ -371,16 +405,24 @@ import 'codemirror/mode/z80/z80';
     editor.setOption('readOnly', true);
     byClass("CodeMirror-cursors").setAttribute("style", "display:none;");
     byClass("CodeMirror-code").innerHTML =
-      "<div style='font-size:110%; margin:0;'>" + viewContent + "</div>";
+      `<div style="font-size:110%; margin:0;">${viewContent}</div>`;
   };
 
   const loadMyPastes = () => {
-    loadView('Soon, you will be able to view a list of your saved pastes.');
+    let view = "<ul id='my-pastes-list'>";
+    for (let i = 0; i < myPastes.documents.length; i++) {
+      let entryURL = buildUrl(myPastes.documents[i].docID, "mypastes", "");
+      view +=
+        `<li><a href="${entryURL.url}" target="_blank">${myPastes.documents[i].label}</a></li>`;
+    };
+    view += "</ul><br />";
+    view += `<button id="new-paste-button" class="py-1 px-2 mx-0 my-1" type="button">New Paste</button>`;
+    loadView(view);
+    clickListener("new-paste-button", backToEditor);
   };
 
-  async function postFileToRegistry(skylink, secretKey, url) {
-    var pubkey = skyid.userId;
-    skyid.setRegistry(`hackerpaste:file:${secretKey}`, skylink, (success) => {
+  async function postFileToRegistry(skylink, docKey, url) {
+    skyid.setRegistry(`hackerpaste:file:${docKey}`, skylink, (success) => {
       if (success !== false) {
         window.location = url.url;
         showCopyBar(url.content);
@@ -389,11 +431,20 @@ import 'codemirror/mode/z80/z80';
     });
   }
 
-  const loadSkylink = (skylink, secretKey) => {
+  async function updateMyPastes(docID) {
+    myPastes.documents.push({label: docLabel, docID: docID});
+    let newPasteList = encryptObjectToJSON(myPastes);
+    console.log("newPasteList: " + newPasteList);
+    skyid.setJSON('hackerpaste:my-pastes', newPasteList, (response) => {
+      if (response !== true) console.log(response);
+    })
+  }
+
+  const loadSkylink = (skylink, docKey) => {
     fetch(`/${skylink}`)
       .then((response) => response.text())
       .then((data) => {
-        if (secretKey) data = decryptData(data, secretKey);
+        if (docKey) data = decryptData(data, docKey);
         if (skylink === gameRoom.substr(0, 46)) {
           loadView(marked(data));
         } else editor.setValue(data);
@@ -421,27 +472,29 @@ import 'codemirror/mode/z80/z80';
     //      file. These are "snapshot" links.
 
     var skylink;
-    var secretKey;
+    var docKey;
     var pubkey;
 
-    persistentSecretKey = null;
+    persistentDocKey = null;
+    docLabel = null;
 
     if (docID === "A".repeat(66)) docID = gameRoom;
 
     if (docID.length === 46) loadSkylink(docID);
     else if (docID.length === 66) {
-      secretKey = docID.substr(46);
+      docKey = docID.substr(46);
       skylink = docID.substr(0, 46);
-      loadSkylink(skylink, secretKey);
+      loadSkylink(skylink, docKey);
     } else if (docID.length == 64) {
-      secretKey = docID.substr(44);
-      persistentSecretKey = secretKey;
-      pubkey = base64ToHex(docID.substr(0, 44)).substr(0, 64);
-      skyid.skynetClient.registry.getEntry(pubkey, `hackerpaste:file:${secretKey}`)
+      docKey = docID.substr(44);
+      persistentDocKey = docKey;
+      let docPubkey = base64ToHex(docID.substr(0, 44)).substr(0, 64);
+      skyid.skynetClient.registry.getEntry(docPubkey,
+          `hackerpaste:file:${docKey}`)
         .then((result) => {
           console.log(result);
           skylink = result.entry.data;
-          loadSkylink(skylink, secretKey);
+          loadSkylink(skylink, docKey);
         })
         .catch((error) => {
           console.error(error);
@@ -449,18 +502,23 @@ import 'codemirror/mode/z80/z80';
     } else alert('This is not a valid paste link.');
   };
 
+  const getPubkeyBasedRetrievalString = (pubkey) =>
+    hexToBase64(pubkey + '00');
+
+  const generateDocKey = () => randomString.url(20);
+
   const generateLink = (mode) => {
-    let secretKey;
+    let docKey;
     let retrievalString;
     if (mode === 'mypastes') {
-      secretKey = persistentSecretKey || randomString.url(20);
-      persistentSecretKey = secretKey;
+      docKey = persistentDocKey || generateDocKey();
+      persistentDocKey = docKey;
     } else {
-      secretKey = randomString.url(20);
+      docKey = generateDocKey();
     }
 
     const data = editor.getValue();
-    const encryptedData = CryptoJS.AES.encrypt(data, secretKey);
+    const encryptedData = encryptData(data, docKey);
     showCopyBar('Uploading...');
     var blob = new Blob(
       [encryptedData], {
@@ -478,11 +536,23 @@ import 'codemirror/mode/z80/z80';
       .then((response) => response.json())
       .then((result) => {
         if (mode !== 'mypastes') retrievalString = result.skylink;
-        else retrievalString = hexToBase64(skyid.userId + '00');
-        var url = buildUrl(retrievalString, mode, secretKey);
-        if (mode === 'mypastes') postFileToRegistry(result.skylink,
-          secretKey, url);
-        else {
+        else retrievalString = getPubkeyBasedRetrievalString(pubkey);
+        var url = buildUrl(retrievalString, mode, docKey);
+        if (mode === 'mypastes') {
+          postFileToRegistry(result.skylink, docKey, url);
+          var docID = retrievalString + docKey;
+          var docFound = false;
+          for (let i = 0; i < myPastes.documents.length; i++) {
+            if (myPastes.documents[i].docID == docID) {
+              docLabel = myPastes.documents[i].label;
+              docFound = true;
+            }
+          };
+          docLabel = docLabel || prompt("Add a label to this document. Only you can see this label.");
+          if (!docFound) {
+            updateMyPastes(docID);
+          }
+        } else {
           window.location = url.url;
           showCopyBar(url.content);
         }
@@ -492,12 +562,12 @@ import 'codemirror/mode/z80/z80';
       });
   };
 
-  const buildUrl = (retrievalString, mode, secretKey) => {
+  const buildUrl = (retrievalString, mode, docKey) => {
     const base =
       `${location.protocol}//${location.host}${location.pathname}`;
     const lang = shorten("Plain Text") === select.selected() ? "" :
       `.${encodeURIComponent(select.selected())}`;
-    const url = base + "#" + retrievalString + secretKey + lang;
+    const url = base + "#" + retrievalString + docKey + lang;
     if (mode === "iframe") {
       const height = editor.doc.height + 45;
       let content =
@@ -542,4 +612,4 @@ import 'codemirror/mode/z80/z80';
 
   init();
 
-}());
+})();
