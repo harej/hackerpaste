@@ -152,9 +152,7 @@ import 'codemirror/mode/z80/z80';
 
   const switchToLoggedIn = (message) => {
     if (message == "login_success") {
-      byId("button-log-in").style.display = "none";
       byId("button-log-out").style.display = "inline-block";
-      byId("button-username").style.display = "inline-block";
       byId("save-to-my-pastes-button").style.display = "inline-block";
       byId("modal-content").innerHTML =
         "<p>Setting up your Hacker Paste account...</p>";
@@ -173,6 +171,8 @@ import 'codemirror/mode/z80/z80';
             skyid.getJSON('hackerpaste:my-pastes', (response3) => {
               if (response3 !== "") {
                 myPastes = decryptJSONToObject(response3);
+                deleteClickListener("button-username", startSkyIDSession);
+                clickListener("button-username", loadMyPastes);
                 MicroModal.close('app-modal');
               } else {
                 let noteToSelf = getPubkeyBasedRetrievalString(
@@ -198,9 +198,10 @@ import 'codemirror/mode/z80/z80';
 
   const switchToLoggedOut = () => {
     skyid.sessionDestroy();
-    byId("button-log-in").style.display = "inline-block";
+    byId("username").textContent = "Sign in with SkyID";
+    clickListener("button-username", startSkyIDSession);
+    deleteClickListener("button-username", loadMyPastes);
     byId("button-log-out").style.display = "none";
-    byId("button-username").style.display = "none";
     byId("save-to-my-pastes-button").style.display = "none";
   };
 
@@ -598,17 +599,19 @@ import 'codemirror/mode/z80/z80';
   const clickListener = (element_id, func) =>
     byId(element_id).addEventListener("click", func);
 
+  const deleteClickListener = (element_id, func) =>
+    byId(element_id).removeEventListener("click", func);
+
   clickListener("copy-close-button", hideCopyBarNow);
   clickListener("wordmark", backToEditor);
   clickListener("releasenumber", loadGameRoom);
-  clickListener("button-log-in", startSkyIDSession);
+  clickListener("button-username", startSkyIDSession);
   clickListener("button-log-out", switchToLoggedOut);
   clickListener("enable-line-wrapping", enableLineWrapping);
   clickListener("disable-line-wrapping", disableLineWrapping);
   clickListener("embed-button", generateEmbed);
   clickListener("save-snapshot-button", generateSnapshotUrl);
   clickListener("save-to-my-pastes-button", generatePersistentUrl);
-  clickListener("button-username", loadMyPastes);
 
   init();
 
