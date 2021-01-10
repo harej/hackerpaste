@@ -241,7 +241,7 @@ import 'codemirror/mode/z80/z80';
       lineNumbers: true,
       theme: "dracula",
       readOnly: readOnly,
-      lineWrapping: false,
+      lineWrapping: true,
       scrollbarStyle: "simple",
     });
     if (readOnly) {
