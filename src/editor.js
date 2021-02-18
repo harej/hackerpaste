@@ -11,6 +11,9 @@ import { byId, byClass, hideCopyBar, backToEditor, clickListener }
 import { buildUrl } from './links.js';
 import { shorten, base64ToHex } from './utility.js';
 
+import 'codemirror/lib/codemirror.css';
+import 'slim-select/dist/slimselect.min.css';
+
 import 'codemirror/addon/mode/loadmode';
 import 'codemirror/addon/mode/overlay';
 import 'codemirror/addon/mode/multiplex';

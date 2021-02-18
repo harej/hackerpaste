@@ -32,6 +32,7 @@ const switchToLoggedIn = (message) => {
           pubkey = response2.dapps["Hacker Paste"].publicKey;
           byId("username").textContent = username;
           byId("button-username").setAttribute('aria-label', 'View My Pastes');
+          byId("button-username").setAttribute('data-microtip-size', 'fit');
           skyid.getJSON('hackerpaste:my-pastes', (response3) => {
             if (response3 !== "") {
               myPastes = decryptJSONToObject(response3, skyid.seed);
@@ -71,4 +72,5 @@ export const switchToLoggedOut = () => {
   byId("save-to-my-pastes-button").style.display = "none";
   byId("button-username").setAttribute('aria-label',
     'Sign in to keep your own private paste list. Registration is completely anonymous.');
+  byId("button-username").setAttribute('data-microtip-size', 'medium');
 };

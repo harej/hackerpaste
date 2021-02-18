@@ -1,12 +1,21 @@
 /*jshint esversion: 8 */
 
-import { startSkyIDSession, switchToLoggedOut } from './account.js';
+import { startSkyIDSession, switchToLoggedOut }
+       from './account.js';
 import { init, disableLineWrapping, enableLineWrapping, loadGameRoom }
        from './editor.js';
 import { hideCopyBarNow, backToEditor, clickListener }
        from './interface.js';
 import { generateEmbed, generateSnapshotUrl, generatePersistentUrl }
        from './links.js';
+
+import './core.css';
+import 'bootstrap/dist/css/bootstrap-grid.min.css';
+import 'microtip/microtip.css';
+import 'slim-select/dist/slimselect.min.css';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/addon/scroll/simplescrollbars.css';
+import 'codemirror/theme/dracula.css';
 
 init();
 

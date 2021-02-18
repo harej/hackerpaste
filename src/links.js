@@ -1,10 +1,13 @@
 /*jshint esversion: 8 */
 
-import { skyid, pubkey } from './account.js';
+import { skyid, pubkey }
+	   from './account.js';
 import { editor, docLabel, persistentDocKey, myPastes, updateMyPastes, select }
        from './editor.js';
-import { encryptData } from './encryption.js';
-import { showCopyBar } from './interface.js';
+import { encryptData }
+       from './encryption.js';
+import { showCopyBar }
+       from './interface.js';
 import { shorten, generateDocKey, generateUuid, getPubkeyBasedRetrievalString }
        from './utility.js';
 
