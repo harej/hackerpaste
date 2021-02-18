@@ -11,6 +11,8 @@ import { byId, byClass, hideCopyBar, backToEditor, clickListener }
 import { buildUrl } from './links.js';
 import { shorten, base64ToHex } from './utility.js';
 
+import { generateSnapshotUrl } from './links.js';
+
 import 'codemirror/lib/codemirror.css';
 import 'slim-select/dist/slimselect.min.css';
 
@@ -228,12 +230,23 @@ const initLangSelector = () => {
   select.set(l ? decodeURIComponent(l) : shorten("Plain Text"));
 };
 
+const initKeyboardShortcuts = () => {
+  // Publish when the you press CTRL+S
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "s" && event.ctrlKey) {
+      event.preventDefault();
+      generateSnapshotUrl();
+    }
+  });
+};
+
 export const init = () => {
   initCodeEditor();
   initLangSelector();
   initCode();
   initClipboard();
   initModals();
+  initKeyboardShortcuts();
 };
 
 export const disableLineWrapping = () => {
