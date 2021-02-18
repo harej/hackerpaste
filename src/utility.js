@@ -1,77 +1,66 @@
-// Source: https://gist.githubusercontent.com/dchest/751fd00ee417c947c252/raw/53c4e953b4748f4a46367fc1bce4aee8cfc4a1cb/randomString.js
-//
-// randomString(length)
-// --------------------
-// 
-// Generates and returns a cryptographically secure
-// uniform alphanumeric random string.
-//
-// Examples:
-//
-//  randomString(14) // "oXYWpc1vODNR3M"
-//  randomString.hex(8) // "663c722b65943b9b"
-//  randomString.entropy(128) // "Ss9waKhjUqOpcoOYgz8zx5"
-//  randomString.hex.entropy(64) // "132ae4800cae9418"
-//
-// If length is 0 or omitted, returns a string containing
-// 128 bits of entropy, which is good enough for most
-// purposes (i.e. globally unique and unpredictable).
-//
-//     randomString() // "shTJbSVWxm4sgqVZiZornN"
-//     randomString.hex() // "2658a04afc409f15ce3527545a88b722"
-//     randomString.base64() // "ttlfbFR5dFn+Fp3TrYWd+D"
-//
-//  randomString.entropy(bits)
-//    returns a random string containing at least
-//    the given number of bits of entropy
-//
-//  randomString.charset
-//    (read-only) gets charset used to generate strings
-//
-// Functions for different charsets
-// (each have the corresponding .entropy and .charset properties):
-//
-//  randomString.alphanumeric(length)
-//    alias for randomString, range: [A-Z, a-z, 0-9]
-// 
-//  randomString.alpha(length)
-//    returns a random alphabetic string in [A-Z, a-z]
-//  
-//  randomString.alphalower(length)
-//    returns a random lowercase alphabetic string in [a-z]
-// 
-//  randomString.hex(length)
-//    returns a random hex string in [0-9, a-f]
-// 
-//  randomString.numeric(length)
-//    returns a random numeric string in [0-9]
-// 
-//  randomString.base64(length)
-//    returns an unpadded random Base64 string in [A-Z, a-z, 0-9, +, /]
-// 
-//  randomString.url(length)
-//    returns an unpadded random URL-safe Base64 string in [A-Z, a-z, 0-9, -, _]
-// 
-//  randomString.custom(charset)
-//    returns a function which generates random strings
-//    with characters from the given charset string:
-//
-//    var randomAbc = randomString.custom('abc')
-//    randomAbc(10) // "bccccccaac"
-//    randomAbc.entropy(32) // "aabccbabccaaabcacaacb"
-//    randomAbc.charset // "abc"
-// 
-// Testing:
-//
-//  randomString.test(quick)
-//    runs a self-test and throws if there are errors.
-//    If quick is true, skips some long tests.
-//
-// ---
-// Made by Dmitry Chestnykh (@dchest) in 2016.
-// Public domain.
-// ---
-(function() {
+/*jshint esversion: 8 */
+
+const slugify = (str) =>
+  str
+  .trim()
+  .toString()
+  .toLowerCase()
+  .replace(/\s+/g, "-")
+  .replace(/\+/g, "-p")
+  .replace(/#/g, "-sharp")
+  .replace(/[^\w\-]+/g, "");
+
+export const shorten = (name) => {
+  let n = slugify(name).replace("script", "-s").replace("python", "py");
+  const nov = (s) => s[0] + s.substr(1).replace(/[aeiouy-]/g, "");
+  if (n.replace(/-/g, "").length <= 4) {
+    return n.replace(/-/g, "");
+  }
+  if (n.split("-").length >= 2) {
+    return n
+      .split("-")
+      .map((x) => nov(x.substr(0, 2)))
+      .join("")
+      .substr(0, 4);
+  }
+  n = nov(n);
+  if (n.length <= 4) {
+    return n;
+  }
+  return n.substr(0, 2) + n.substr(n.length - 2, 2);
+};
+
+// https://gist.github.com/GeorgioWan/16a7ad2a255e8d5c7ed1aca3ab4aacec
+const hexToBase64 = (str) => {
+  return btoa(String.fromCharCode.apply(null,
+    str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ")
+    .replace(/ +$/, "").split(" "))).replace('+', '-').replace('/', '_');
+};
+
+// https://gist.github.com/GeorgioWan/16a7ad2a255e8d5c7ed1aca3ab4aacec
+export const base64ToHex = (str) => {
+  for (var i = 0, bin = atob(str.replace(/[ \r\n]+$/, "").replace('-',
+        '+')
+      .replace('_', '/')), hex = []; i < bin
+    .length; ++i) {
+    let tmp = bin.charCodeAt(i).toString(16);
+    if (tmp.length === 1) tmp = "0" + tmp;
+    hex[hex.length] = tmp;
+  }
+  return hex.join("");
+};
+
+export const generateDocKey = () => generateRandomString.url(20);
+
+export const generateUuid = () => generateRandomString.alphanumeric(16);
+
+export const getPubkeyBasedRetrievalString = (pubkey) =>
+  hexToBase64(pubkey + '00');
+
+// Source:
+// https://gist.githubusercontent.com/dchest/751fd00ee417c947c252/raw/53c4e953b4748f4a46367fc1bce4aee8cfc4a1cb/randomString.js
+
+var generateRandomString = (function() {
 
   var getRandomBytes = (
     (typeof self !== 'undefined' && (self.crypto || self.msCrypto))
@@ -216,10 +205,6 @@
       }
     }
   };
-
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = randomString;
-  }
 
   return randomString;
 
