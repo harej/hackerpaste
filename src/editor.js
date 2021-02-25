@@ -1,20 +1,26 @@
 /*jshint esversion: 8 */
 
-import ClipboardJS from 'clipboard';
 import CodeMirror from 'codemirror';
 import SlimSelect from 'slim-select';
 import marked from 'marked';
-import { skyid, pubkey } from './account.js';
-import { decryptData, encryptObjectToJSON } from './encryption.js';
-import { byId, byClass, hideCopyBar, backToEditor, clickListener }
-       from './interface.js';
-import { buildUrl } from './links.js';
-import { shorten, base64ToHex } from './utility.js';
 
-import { generateSnapshotUrl } from './links.js';
+import { skyid, pubkey, startSkyIDSession, switchToLoggedOut }
+       from './account.js';
+import { decryptData, encryptObjectToJSON }
+       from './encryption.js';
+import { byId, byClass, hideCopyBar, hideCopyBarNow, clickListener}
+       from './interface.js';
+import { buildUrl }
+       from './links.js';
+import { shorten, base64ToHex }
+       from './utility.js';
+import { generateEmbed, generateSnapshotUrl, generatePersistentUrl }
+       from './links.js';
 
 import 'codemirror/lib/codemirror.css';
 import 'slim-select/dist/slimselect.min.css';
+import 'codemirror/addon/scroll/simplescrollbars.css';
+import 'codemirror/theme/dracula.css';
 
 import 'codemirror/addon/mode/loadmode';
 import 'codemirror/addon/mode/overlay';
@@ -144,7 +150,6 @@ import 'codemirror/mode/yaml/yaml';
 import 'codemirror/mode/yaml-frontmatter/yaml-frontmatter';
 import 'codemirror/mode/z80/z80';
 
-export var clipboard;
 export var editor;
 export var select;
 export var myPastes;
@@ -152,28 +157,15 @@ export var docLabel;
 export var persistentDocKey;
 export var statsEl;
 
-const gameRoom =
+export const gameRoom =
   "AAAuytkzAUZHtJfNKENEj4A9HAvne4fGaKBLONkWGQ01vgvn6zv0Zd2HQGT89wuAy1";
 
-const initCode = () => {
+export const initCode = () => {
   let payload = location.hash.substr(1);
   if (payload.length === 0) return;
   payload = payload.split(".");
   let docID = payload[0];
   loadByDocID(docID);
-};
-
-const initClipboard = () => {
-  clipboard = new ClipboardJS(".clipboard");
-  clipboard.on("success", () => {
-    hideCopyBar(true);
-  });
-};
-
-const initModals = () => {
-  MicroModal.init({
-    onClose: () => editor.focus(),
-  });
 };
 
 export const initCodeEditor = () => {
@@ -198,7 +190,7 @@ export const initCodeEditor = () => {
   });
 };
 
-const initLangSelector = () => {
+export const initLangSelector = () => {
   select = new SlimSelect({
     select: "#language",
     data: CodeMirror.modeInfo.map((e) => ({
@@ -230,8 +222,8 @@ const initLangSelector = () => {
   select.set(l ? decodeURIComponent(l) : shorten("Plain Text"));
 };
 
-const initKeyboardShortcuts = () => {
-  // Publish when the you press CTRL+S
+export const initKeyboardShortcuts = () => {
+  // Save snapshot when you press CTRL+S
   document.addEventListener("keydown", (event) => {
     if (event.key === "s" && event.ctrlKey) {
       event.preventDefault();
@@ -240,25 +232,17 @@ const initKeyboardShortcuts = () => {
   });
 };
 
-export const init = () => {
-  initCodeEditor();
-  initLangSelector();
-  initCode();
-  initClipboard();
-  initModals();
-  initKeyboardShortcuts();
-};
-
-export const disableLineWrapping = () => {
-  byId("disable-line-wrapping").classList.add("hidden");
-  byId("enable-line-wrapping").classList.remove("hidden");
-  editor.setOption("lineWrapping", false);
-};
-
-export const enableLineWrapping = () => {
-  byId("enable-line-wrapping").classList.add("hidden");
-  byId("disable-line-wrapping").classList.remove("hidden");
-  editor.setOption("lineWrapping", true);
+export const initListeners = () => {
+  clickListener("copy-close-button", hideCopyBarNow);
+  clickListener("wordmark", backToEditor);
+  clickListener("releasenumber", loadGameRoom);
+  clickListener("button-username", startSkyIDSession);
+  clickListener("button-log-out", switchToLoggedOut);
+  clickListener("enable-line-wrapping", enableLineWrapping);
+  clickListener("disable-line-wrapping", disableLineWrapping);
+  clickListener("embed-button", generateEmbed);
+  clickListener("save-snapshot-button", generateSnapshotUrl);
+  clickListener("save-to-my-pastes-button", generatePersistentUrl);
 };
 
 const loadByDocID = (docID) => {
@@ -331,6 +315,11 @@ const loadSkylink = (skylink, docKey) => {
 
 export const loadGameRoom = () => loadByDocID(gameRoom);
 
+export const backToEditor = () => {
+  byId("editor").innerHTML = "";
+  initCodeEditor();
+};
+
 export const loadMyPastes = () => {
   let view = "<ul id='my-pastes-list'>";
   for (let i = 0; i < myPastes.documents.length; i++) {
@@ -352,3 +341,15 @@ export async function updateMyPastes(docID) {
     if (response !== true) console.log(response);
   })
 }
+
+export const disableLineWrapping = () => {
+  byId("disable-line-wrapping").classList.add("hidden");
+  byId("enable-line-wrapping").classList.remove("hidden");
+  editor.setOption("lineWrapping", false);
+};
+
+export const enableLineWrapping = () => {
+  byId("enable-line-wrapping").classList.add("hidden");
+  byId("disable-line-wrapping").classList.remove("hidden");
+  editor.setOption("lineWrapping", true);
+};

@@ -10,26 +10,6 @@ const slugify = (str) =>
   .replace(/#/g, "-sharp")
   .replace(/[^\w\-]+/g, "");
 
-export const shorten = (name) => {
-  let n = slugify(name).replace("script", "-s").replace("python", "py");
-  const nov = (s) => s[0] + s.substr(1).replace(/[aeiouy-]/g, "");
-  if (n.replace(/-/g, "").length <= 4) {
-    return n.replace(/-/g, "");
-  }
-  if (n.split("-").length >= 2) {
-    return n
-      .split("-")
-      .map((x) => nov(x.substr(0, 2)))
-      .join("")
-      .substr(0, 4);
-  }
-  n = nov(n);
-  if (n.length <= 4) {
-    return n;
-  }
-  return n.substr(0, 2) + n.substr(n.length - 2, 2);
-};
-
 // https://gist.github.com/GeorgioWan/16a7ad2a255e8d5c7ed1aca3ab4aacec
 const hexToBase64 = (str) => {
   return btoa(String.fromCharCode.apply(null,
@@ -48,6 +28,26 @@ export const base64ToHex = (str) => {
     hex[hex.length] = tmp;
   }
   return hex.join("");
+};
+
+export const shorten = (name) => {
+  let n = slugify(name).replace("script", "-s").replace("python", "py");
+  const nov = (s) => s[0] + s.substr(1).replace(/[aeiouy-]/g, "");
+  if (n.replace(/-/g, "").length <= 4) {
+    return n.replace(/-/g, "");
+  }
+  if (n.split("-").length >= 2) {
+    return n
+      .split("-")
+      .map((x) => nov(x.substr(0, 2)))
+      .join("")
+      .substr(0, 4);
+  }
+  n = nov(n);
+  if (n.length <= 4) {
+    return n;
+  }
+  return n.substr(0, 2) + n.substr(n.length - 2, 2);
 };
 
 export const generateDocKey = () => generateRandomString.url(20);

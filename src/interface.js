@@ -1,10 +1,28 @@
 /*jshint esversion: 8 */
 
-import { initCodeEditor } from './editor.js';
+import ClipboardJS from 'clipboard';
+
+import 'bootstrap/dist/css/bootstrap-grid.min.css';
+import 'microtip/microtip.css';
+
+export var clipboard;
 
 export const byId = (id) => document.getElementById(id);
 
 export const byClass = (id) => document.getElementsByClassName(id)[0];
+
+export const initModals = () => {
+  MicroModal.init({
+    onClose: () => editor.focus(),
+  });
+};
+
+export const initClipboard = () => {
+  clipboard = new ClipboardJS(".clipboard");
+  clipboard.on("success", () => {
+    hideCopyBar(true);
+  });
+};
 
 export const clickListener = (element_id, func) =>
   byId(element_id).addEventListener("click", func);
@@ -37,8 +55,3 @@ export const hideCopyBar = (success) => {
 };
 
 export const hideCopyBarNow = () => hideCopyBar(false);
-
-export const backToEditor = () => {
-  byId("editor").innerHTML = "";
-  initCodeEditor();
-};
