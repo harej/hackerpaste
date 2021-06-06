@@ -14,5 +14,5 @@ export const encryptObject = (data, seed) => {
   return data;
 };
 
-export const decryptJSONToObject = (data, seed) =>
-  JSON.parse(decryptData(JSON.parse(data).encrypted, seed));
+export const decryptObject = (data, seed) =>
+  decryptData(JSON.parse(data).encrypted, seed);
