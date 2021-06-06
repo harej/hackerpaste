@@ -3,7 +3,7 @@
 import MicroModal from 'micromodal';
 import { loadMyPastes, myPastes }
        from './editor.js';
-import { encryptObjectToJSON, decryptJSONToObject }
+import { encryptObject, decryptJSONToObject }
        from './encryption.js';
 import { byId, clickListener, deleteClickListener }
        from './interface.js';
@@ -44,7 +44,7 @@ const switchToLoggedIn = (message) => {
                 pubkey) + generateDocKey();
               let defaultContent =
                 {documents:[{label:"Note to Self",docID:noteToSelf}]};
-              defaultContent = encryptObjectToJSON(defaultContent, skyid.seed);
+              defaultContent = encryptObject(defaultContent, skyid.seed);
               skyid.setJSON('hackerpaste:my-pastes',
                 defaultContent, () => location.reload());
             }

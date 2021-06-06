@@ -6,7 +6,7 @@ import marked from 'marked';
 
 import { skyid, pubkey, startSkyIDSession, switchToLoggedOut }
        from './account.js';
-import { decryptData, encryptObjectToJSON }
+import { decryptData, encryptObject }
        from './encryption.js';
 import { byId, byClass, hideCopyBar, hideCopyBarNow, clickListener}
        from './interface.js';
@@ -335,7 +335,7 @@ export const loadMyPastes = () => {
 
 export async function updateMyPastes(docID) {
   myPastes.documents.push({label: docLabel, docID: docID});
-  let newPasteList = encryptObjectToJSON(myPastes, skyid.seed);
+  let newPasteList = encryptObject(myPastes, skyid.seed);
   console.log("newPasteList: " + newPasteList);
   skyid.setJSON('hackerpaste:my-pastes', newPasteList, (response) => {
     if (response !== true) console.log(response);
