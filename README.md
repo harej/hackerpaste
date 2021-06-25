@@ -5,6 +5,7 @@
 * Hacker Paste is **entirely in-browser**. There is no central server. Your data is not submitted to any intermediary processors. Everything that goes on in the app can be viewed in the source code in your browser. The app and its operations are highly transparent.
 * Hacker Paste stores snippets to [Skynet](https://siasky.net), a decentralized content delivery network. All pastes generated in Hacker Paste, and the Hacker Paste app itself, can be **accessed on any Skynet portal.**
 * Hacker Paste **encrypts all data** with AES encryption prior to being uploaded, using a securely generated encryption key that is kept in the snippet URL. The existence of this document is not recorded anywhere other than your list of saved pastes. The existence of the document and its contents are only known to you and anyone you share the URL with.
+* **Syntax highlighting** in any programming language you can think of
 
 ## See for yourself
 * [Example document](https://hackerpaste.hns.siasky.net/#AAB0AzZ2_C2-lM9IFRVeP9-rzJHNrTEvEMuG2mg7ri4ZrQIOdMV8pl2h8XtEMuMeIN)
@@ -16,12 +17,11 @@
 * Decentralized storage and delivery means resistence to censorship and deplatforming. While public portals like [siasky.net](https://siasky.net) and [skyportal.xyz](https://skyportal.xyz) are available for convenience, anyone can operate their own Skynet portal and use Hacker Paste that way.
 * No central app server means the app can't go down.
 
-## Features
+## Usage
 
-* Syntax highlighting in any programming language you can think of
-* Save pastes:
-  * As one-time snapshots (i.e. saving again generates a new URL), with or without HTML embed code
-  * Or, log in with [SkyID](https://sky-id.hns.siasky.net) (no personal information required) and save pastes with re-usable URLs to your "My Pastes" list
+No user account is needed to use Hacker Paste. However, you can optionally sign in with [SkyID](https://sky-id.hns.siasky.net/). This allows you to save your pastes to your "My Pastes" list and to generate and save pastes at reusable URLs (i.e., mutable documents). No personal information of any kind is needed to create a SkyID account.
+
+Both logged in and logged out accounts can save "Snapshots," which are immutable documents. Updating the document generates a new link.
 
 ## Build and deploy instructions
 
