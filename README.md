@@ -2,7 +2,7 @@
 ...is a one-of-a-kind text snippet sharing tool, secure by design and built for the decentralized web.
 
 ## The best paste bin ever created
-* Hacker Paste is **entirely in-browser**. There is no central server. Your data is not submitted to any intermediary processors. Everything that goes on in the app can be viewed in the source code in your browser. The app and its operations are highly transparent.
+* Hacker Paste is **entirely in-browser**. There is no central server. Your data is not submitted to any intermediary processors. Everything that goes on in the app can be viewed in your browser's inspector. The app and its operations are highly transparent.
 * Hacker Paste stores snippets to [Skynet](https://siasky.net), a decentralized content delivery network. All pastes generated in Hacker Paste, and the Hacker Paste app itself, can be **accessed on any Skynet portal.**
 * Hacker Paste **encrypts all data** with AES encryption prior to being uploaded, using a securely generated encryption key that is kept in the snippet URL. The existence of this document is not recorded anywhere other than your list of saved pastes. The existence of the document and its contents are only known to you and anyone you share the URL with.
 * **Syntax highlighting** in any programming language you can think of
