@@ -1,9 +1,17 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   plugins: [
     new MiniCssExtractPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: "static", to: path.resolve(__dirname, 'build/static')},
+        { from: "site.webmanifest", to: path.resolve(__dirname, 'build')},
+        { from: "index.html", to: path.resolve(__dirname, 'build')},
+      ],
+    }),
   ],
   module: {
     rules:[
@@ -34,7 +42,7 @@ module.exports = {
   },
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build/dist'),
     filename: 'bundle.js'
   },
   resolve: {
