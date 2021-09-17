@@ -8,7 +8,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: "static", to: path.resolve(__dirname, 'build/static')},
-        { from: "site.webmanifest", to: path.resolve(__dirname, 'build')},
+        { from: "manifest.json", to: path.resolve(__dirname, "build") },
         { from: "index.html", to: path.resolve(__dirname, 'build')},
       ],
     }),
