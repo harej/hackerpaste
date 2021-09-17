@@ -28,13 +28,13 @@ const switchToLoggedIn = (message) => {
       } else {
         username = response.entry.data;
         skyid.getProfile((response2) => {
-          response2 = JSON.parse(response2);
+          /*response2 = JSON.parse(response2);*/
           pubkey = response2.dapps["Hacker Paste"].publicKey;
           byId("username").textContent = username;
           byId("button-username").setAttribute('aria-label', 'View My Pastes');
           byId("button-username").setAttribute('data-microtip-size', 'fit');
           skyid.getJSON('hackerpaste:my-pastes', (response3) => {
-            if (response3 !== "") {
+            if (response3 !== null) {
               myPastes = decryptObject(response3, skyid.seed);
               deleteClickListener("button-username", startSkyIDSession);
               clickListener("button-username", loadMyPastes);

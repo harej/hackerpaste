@@ -30,19 +30,17 @@ const generateLink = (mode) => {
       encoding: "utf-8"
     }
   );
-  var formData = new FormData();
-  formData.append("file", blob);
-  const uuid = generateUuid();
-  fetch(`/skynet/skyfile/${uuid}?filename=paste.txt`, {
-      method: "POST",
-      body: formData,
-    })
-    .then((response) => response.json())
+  skyid.skynetClient.uploadFile(blob)
     .then((result) => {
-      if (mode !== 'mypastes') retrievalString = result.skylink;
-      else retrievalString = getPubkeyBasedRetrievalString(pubkey);
+      if (mode !== 'mypastes') {
+        retrievalString = result.skylink.replace('sia:', '');
+      }
+      else {
+        retrievalString = getPubkeyBasedRetrievalString(pubkey);
+      }
       var url = buildUrl(retrievalString, mode, docKey);
       if (mode === 'mypastes') {
+        //myPastes = JSON.parse(myPastes);
         postFileToRegistry(result.skylink, docKey, url);
         var docID = retrievalString + docKey;
         var docFound = false;
@@ -54,7 +52,7 @@ const generateLink = (mode) => {
         };
         docLabel = docLabel || prompt("Add a label to this document. Only you can see this label.");
         if (!docFound) {
-          updateMyPastes(docID);
+          updateMyPastes(docID, docLabel);
         }
       } else {
         window.location = url.url;

@@ -15,4 +15,4 @@ export const encryptObject = (data, seed) => {
 };
 
 export const decryptObject = (data, seed) =>
-  decryptData(JSON.parse(data).encrypted, seed);
+  decryptData(data.encrypted, seed);

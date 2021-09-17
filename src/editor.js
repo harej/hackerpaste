@@ -282,7 +282,6 @@ const loadByDocID = (docID) => {
     skyid.skynetClient.registry.getEntry(docPubkey,
         `hackerpaste:file:${docKey}`)
       .then((result) => {
-        console.log(result);
         skylink = result.entry.data;
         loadSkylink(skylink, docKey);
       })
@@ -299,10 +298,15 @@ const loadView = (viewContent) => {
     `<div style="font-size:110%; margin:0;">${viewContent}</div>`;
 };
 
+async function fetchSkylink(skylink) {
+  let content = skyid.skynetClient.getFileContent(skylink);
+  return content;
+}
+
 const loadSkylink = (skylink, docKey) => {
-  fetch(`/${skylink}`)
-    .then((response) => response.text())
+  skyid.skynetClient.getFileContent(skylink)
     .then((data) => {
+      data = data.data; // drop the metadata; get to the good stuff
       if (docKey) data = decryptData(data, docKey);
       if (skylink === gameRoom.substr(0, 46)) {
         loadView(marked(data));
@@ -322,6 +326,7 @@ export const backToEditor = () => {
 
 export const loadMyPastes = () => {
   let view = "<ul id='my-pastes-list'>";
+  if (typeof myPastes !== "object") myPastes = JSON.parse(myPastes);
   for (let i = 0; i < myPastes.documents.length; i++) {
     let entryURL = buildUrl(myPastes.documents[i].docID, "mypastes", "");
     view +=
@@ -333,12 +338,11 @@ export const loadMyPastes = () => {
   clickListener("new-paste-button", backToEditor);
 };
 
-export async function updateMyPastes(docID) {
+export async function updateMyPastes(docID, docLabel) {
   myPastes.documents.push({label: docLabel, docID: docID});
   let newPasteList = encryptObject(myPastes, skyid.seed);
-  console.log("newPasteList: " + newPasteList);
   skyid.setJSON('hackerpaste:my-pastes', newPasteList, (response) => {
-    if (response !== true) console.log(response);
+    if (response !== true) console.error(response);
   })
 }
 
