@@ -33,6 +33,6 @@ Both logged in and logged out accounts can save "Snapshots," which are immutable
 
 Anything pushed to the `main` branch of `https://github.com/harej/hackerpaste` will be automatically deployed to Skynet and available through the Handshake domain `hackerpaste.hns`. Said branch should be considered the source of truth as to the latest version of Hacker Paste.
 
-If you would like to deploy your own build of Hacker Paste to Skynet (either because you've made modifications or you do not trust the owner of the `handshake.hns` domain):
+If you would like to deploy your own build of Hacker Paste to Skynet (either because you've made modifications or you do not trust the owner of the `hackerpaste.hns` domain):
 
 4. Upload `build` directory to Skynet using a portal such as [siasky.net](https://siasky.net). Be sure to select the directory upload option. You will get a link with a 55-character subdomain to your deployment.
