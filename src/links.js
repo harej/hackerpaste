@@ -4,7 +4,7 @@ import { skyid, pubkey }
 	   from './account.js';
 import { editor, docLabel, persistentDocKey, myPastes, updateMyPastes, select }
        from './editor.js';
-import { encryptData }
+import { encryptData, decryptObject }
        from './encryption.js';
 import { showCopyBar }
        from './interface.js';
@@ -40,20 +40,26 @@ const generateLink = (mode) => {
       }
       var url = buildUrl(retrievalString, mode, docKey);
       if (mode === 'mypastes') {
-        //myPastes = JSON.parse(myPastes);
-        postFileToRegistry(result.skylink, docKey, url);
-        var docID = retrievalString + docKey;
-        var docFound = false;
-        for (let i = 0; i < myPastes.documents.length; i++) {
-          if (myPastes.documents[i].docID == docID) {
-            docLabel = myPastes.documents[i].label;
-            docFound = true;
+        skyid.getJSON('hackerpaste:my-pastes', (response3) => {
+          if (response3 !== null) {
+            myPastes = decryptObject(response3, skyid.seed);
+            myPastes = JSON.parse(myPastes);
+            console.log(myPastes);
+            postFileToRegistry(result.skylink, docKey, url);
+            var docID = retrievalString + docKey;
+            var docFound = false;
+            for (let i = 0; i < myPastes.documents.length; i++) {
+              if (myPastes.documents[i].docID == docID) {
+                docLabel = myPastes.documents[i].label;
+                docFound = true;
+              }
+            };
+            docLabel = docLabel || prompt("Add a label to this document. Only you can see this label.");
+            if (!docFound) {
+              updateMyPastes(docID, docLabel);
+            }
           }
-        };
-        docLabel = docLabel || prompt("Add a label to this document. Only you can see this label.");
-        if (!docFound) {
-          updateMyPastes(docID, docLabel);
-        }
+        });
       } else {
         window.location = url.url;
         showCopyBar(url.content);
