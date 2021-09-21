@@ -14,7 +14,7 @@
     "crypto-js": "^4.0.0",
     "file-loader": "^6.2.0",
     "jquery": "^3.5.1",
-    "marked": "^1.2.7",
+    "marked": "^3.0.4",
     "micromodal": "^0.4.6",
     "microtip": "^0.2.2",
     "popper.js": "^1.16.1",
