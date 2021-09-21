@@ -27,7 +27,7 @@
 
 <body class="m-0">
     <script>
-        const readOnly = window.location !== window.parent.location ||
+        const readOnly = location.hash.substr(1).length !== 0 && window.location !== window.parent.location ||
             new URLSearchParams(window.location.search)
             .has('readonly');
         if (readOnly) {
