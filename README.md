@@ -25,14 +25,29 @@ No user account is needed to use Hacker Paste. However, you can optionally sign 
 
 Both logged in and logged out accounts can save "Snapshots," which are immutable documents. Updating the document generates a new link.
 
-## Build and deploy instructions
+## Build
 
 1. `git clone https://github.com/harej/hackerpaste && cd hackerpaste`
 2. `npm install`
 3. `npm run build`
 
-Anything pushed to the `main` branch of `https://github.com/harej/hackerpaste` will be automatically deployed to Skynet and available through the Handshake domain `hackerpaste.hns`. Said branch should be considered the source of truth as to the latest version of Hacker Paste.
+## Deploy to Skynet
 
-If you would like to deploy your own build of Hacker Paste to Skynet (either because you've made modifications or you do not trust the owner of the `hackerpaste.hns` domain):
+Anything pushed to the `main` branch of `https://github.com/harej/hackerpaste` will be automatically deployed to Skynet and made available through the Handshake domain `hackerpaste.hns` and the Ethereum domain `hackerpaste.eth`. The `main` branch should be considered the source of truth as to the latest version of Hacker Paste.
 
-4. Upload `build` directory to Skynet using a portal such as [siasky.net](https://siasky.net). Be sure to select the directory upload option. You will get a link with a 55-character subdomain to your deployment.
+If you would like to deploy your own build of Hacker Paste to Skynet (either because you've made modifications or you do not trust the owner of the `hackerpaste.hns` or `hackerpaste.eth` domains), upload the `build` directory to Skynet using a portal such as [siasky.net](https://siasky.net). Be sure to select the directory upload option.
+
+Once you upload the app you will get a link with a 55-character subdomain to your deployment. This link will always point to that exact version of the app. (In certain scenarios, you may prefer a link that can be guaranteed to load the same version of the app.) If you want to be able to update the app and not have to share new links, it is recommended you create a "resolver skylink" using [Rift](https://riftapp.hns.siasky.net/#/). To do so:
+
+1. Log in with Skynet (MySky). If you do not have a MySky account, you will be prompted to create one. (Note this is different from SkyID, the predecessor login system used by Hacker Paste.)
+2. From the row of menu options select "DNS"
+3. Click the "Add DNS record" button on the top right. You will be prompted for a name and a skylink. If you have a HNS or ENS name for the app you can use that, or you can use any arbitrary identifying label. For the skylink, take the 55-character app subdomain and somehow convert it into a 46-character skylink.
+4. Click "Save". You will have a resolver skylink that can be updated to point to the latest version of Hacker Paste.
+
+There are tutorials available for [associating resolver links with Handshake](https://docs.siasky.net/integrations/hns-names) and [associating resolver links with Ethereum Name Service](https://docs.siasky.net/integrations/ens-ethereum-name-service).
+
+## Donate
+
+Check out [Hacker Paste on Gitcoin](https://gitcoin.co/grants/3094/hacker-paste).
+
+Alternatively you can send SiaCoin to `4868b7b041f0b80b61b02a07032454667ea69b0f909ea289a016b5678307d033542de76d28a9`.
