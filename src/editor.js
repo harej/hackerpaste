@@ -157,9 +157,6 @@ export var docLabel;
 export var persistentDocKey;
 export var statsEl;
 
-export const gameRoom =
-  "AAAuytkzAUZHtJfNKENEj4A9HAvne4fGaKBLONkWGQ01vgvn6zv0Zd2HQGT89wuAy1";
-
 export const initCode = () => {
   let payload = location.hash.substr(1);
   if (payload.length === 0) return;
@@ -235,7 +232,6 @@ export const initKeyboardShortcuts = () => {
 export const initListeners = () => {
   clickListener("copy-close-button", hideCopyBarNow);
   clickListener("wordmark", backToEditor);
-  clickListener("releasenumber", loadGameRoom);
   clickListener("button-username", startSkyIDSession);
   clickListener("button-log-out", switchToLoggedOut);
   clickListener("enable-line-wrapping", enableLineWrapping);
@@ -267,8 +263,6 @@ const loadByDocID = (docID) => {
 
   persistentDocKey = null;
   docLabel = null;
-
-  if (docID === "A".repeat(66)) docID = gameRoom;
 
   if (docID.length === 46) loadSkylink(docID);
   else if (docID.length === 66) {
@@ -307,8 +301,9 @@ const loadSkylink = (skylink, docKey) => {
   skyid.skynetClient.getFileContent(skylink)
     .then((data) => {
       data = data.data; // drop the metadata; get to the good stuff
+      let loadAsMarkdown = false;
       if (docKey) data = decryptData(data, docKey);
-      if (skylink === gameRoom.substr(0, 46)) {
+      if (loadAsMarkdown) {
         loadView(marked(data));
       } else editor.setValue(data);
     })
@@ -316,8 +311,6 @@ const loadSkylink = (skylink, docKey) => {
       console.error("Error:", error);
     });
 };
-
-export const loadGameRoom = () => loadByDocID(gameRoom);
 
 export const backToEditor = () => {
   byId("editor").innerHTML = "";
