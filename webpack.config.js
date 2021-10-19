@@ -1,9 +1,17 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
+  devServer: {
+    port: 9000
+  },
+
   plugins: [
+    new HtmlWebpackPlugin({
+      template: "./index.html"
+    }),
     new MiniCssExtractPlugin(),
     new CopyPlugin({
       patterns: [
