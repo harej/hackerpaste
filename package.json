@@ -4,6 +4,7 @@
   "description": "The Secure and Decentralized Paste Bin",
   "main": "core.js",
   "dependencies": {
+    "@skynethub/userprofile-library": "^0.1.12-beta",
     "babel": "^6.23.0",
     "blakejs": "^1.1.0",
     "bootstrap": "^4.6.0",
@@ -20,6 +21,7 @@
     "microtip": "^0.2.2",
     "popper.js": "^1.16.1",
     "rollup": "^2.35.1",
+    "skynet-js": "^4.0.18-beta",
     "slim-select": "^1.25.0",
     "stream-browserify": "^3.0.0",
     "webpack-dev-server": "^4.3.1"

@@ -1,5 +1,6 @@
 /*jshint esversion: 8 */
-
+// import { UserProfileDAC } from "@skynethub/userprofile-library";
+import { MySky } from './mysky';
 import MicroModal from 'micromodal';
 import { loadMyPastes, myPastes }
        from './editor.js';
@@ -14,6 +15,7 @@ export var username;
 export var pubkey;
 
 const switchToLoggedIn = (message) => {
+  debugger
   if (message == "login_success") {
     byId("button-log-out").style.display = "inline-block";
     byId("save-to-my-pastes-button").style.display = "inline-block";
@@ -27,38 +29,29 @@ const switchToLoggedIn = (message) => {
           location.reload());
       } else {
         username = response.entry.data;
-        skyid.getProfile((response2) => {
-          /*response2 = JSON.parse(response2);*/
-          pubkey = response2.dapps["Hacker Paste"].publicKey;
-          byId("username").textContent = username;
-          byId("button-username").setAttribute('aria-label', 'View My Pastes');
-          byId("button-username").setAttribute('data-microtip-size', 'fit');
-          skyid.getJSON('hackerpaste:my-pastes', (response3) => {
-            if (response3 !== null) {
-              myPastes = decryptObject(response3, skyid.seed);
-              deleteClickListener("button-username", startSkyIDSession);
-              clickListener("button-username", loadMyPastes);
-              MicroModal.close('app-modal');
-            } else {
-              let noteToSelf = getPubkeyBasedRetrievalString(
-                pubkey) + generateDocKey();
-              let defaultContent =
-                {documents:[{label:"Note to Self",docID:noteToSelf}]};
-              defaultContent = encryptObject(defaultContent, skyid.seed);
-              skyid.setJSON('hackerpaste:my-pastes',
-                defaultContent, () => location.reload());
-            }
-          });
+        byId("username").textContent = username;
+        byId("button-username").setAttribute('aria-label', 'View My Pastes');
+        byId("button-username").setAttribute('data-microtip-size', 'fit');
+        skyid.getJSON('hackerpaste:my-pastes', (response3) => {
+          if (response3["entry"] !== null) {
+            //myPastes = decryptObject(response3, skyid.seed);
+            let myPastes = response3["entry"]
+            deleteClickListener("button-username", startSkyIDSession);
+            clickListener("button-username", loadMyPastes);
+            MicroModal.close('app-modal');
+          } else {
+            let defaultContent = {documents:[{label: "Note to Self", docID:Math.random()*1000}]}
+            skyid.setJSON('hackerpaste:my-pastes',
+              defaultContent, () => location.reload());
+          }
         });
       }
     });
   }
 };
-
-export var skyid = new SkyID('Hacker Paste', switchToLoggedIn, {
+export var skyid = new MySky('Hacker Paste', switchToLoggedIn, {
   devMode: false
 });
-
 if (skyid.seed != "") switchToLoggedIn("login_success");
 
 export const startSkyIDSession = () => skyid.sessionStart();
