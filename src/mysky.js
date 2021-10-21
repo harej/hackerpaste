@@ -1,5 +1,6 @@
 
 import { SkynetClient, Permission, PermCategory, PermType } from "skynet-js";
+import { UserProfileDAC } from "@skynethub/userprofile-library";
 const portal = window.location.hostname === 'localhost' ? "https://siasky.net" : undefined;
 const client = new SkynetClient(portal);
 
@@ -9,9 +10,32 @@ export class MySky {
         this.start = sessionStart
         this.seed = ""
         this._init()
-        // this.skynetClient.registry.getEntry = () => {}
-        // this.skynetClient.registry.getFileContent = () => {}
-        // this.skynetClient.uploadFile() = (blob) => {}
+        this.skynetClient.registry.getEntry = async function(path, callback){
+            this.getJSON(path, callback)
+        }
+        this.skynetClient.registry.getFileContent = function(skylink){
+            return new Promise((resolve, reject) => {
+                _mysky.getJSONEncrypted("blobs.json").then((json) => {
+                    let url = json.blobs[skylink.replace("sia:", "")]
+                    fetch(url).then(res => res.blob()).then((blob) => resolve(blob))
+                })
+            })
+        }
+        this.skynetClient.uploadFile = function(blob) {
+            return new Promise((resolve, reject) => {
+                _mysky.getJSONEncrypted("blobs.json").then((json) => {
+                    let data = new FileReader()
+                    data.onload = function(url){
+                        json.blobs.push(url)
+                        console.log(json.blobs)
+                        _mysky.setJSONEncrypted("blobs.json", json).then((result) => {
+                            resolve({skylink: "sia:" + json.blobs.length})
+                        })
+                    } 
+                    data.readAsDataURL(blob);
+                })
+            })
+        }
     }
     async _init(){
         let reqDomain = await client.extractDomain(window.location.hostname)
