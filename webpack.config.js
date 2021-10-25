@@ -9,21 +9,27 @@ module.exports = {
     port: 9000
   },
 
-    plugins: [
+  plugins: [
     new HtmlWebpackPlugin({
       template: "./index.html"
     }),
     new MiniCssExtractPlugin(),
     new CopyPlugin({
       patterns: [
-        { from: "static", to: path.resolve(__dirname, 'build/static')},
+        { from: "static", to: path.resolve(__dirname, 'build/static') },
         { from: "manifest.json", to: path.resolve(__dirname, "build") },
-        { from: "index.html", to: path.resolve(__dirname, 'build')},
+        { from: "index.html", to: path.resolve(__dirname, 'build') },
       ],
     }),
   ],
   module: {
-    rules:[
+    rules: [
+      {
+        test: /\.m?jsx?$/,
+        resolve: {
+          fullySpecified: false
+        },
+      },
       {
         test: /\.css$/,
         use: [
@@ -55,10 +61,10 @@ module.exports = {
     filename: 'bundle.js'
   },
   resolve: {
-  	fallback: {
-  		"crypto": require.resolve("crypto-browserify"),
-  		"stream": require.resolve("stream-browserify"),
-  		"buffer": require.resolve("buffer/")
-  	}
+    fallback: {
+      "crypto": require.resolve("crypto-browserify"),
+      "stream": require.resolve("stream-browserify"),
+      "buffer": require.resolve("buffer/")
+    }
   }
 };

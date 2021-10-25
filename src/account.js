@@ -15,7 +15,6 @@ export var username;
 export var pubkey;
 
 const switchToLoggedIn = (message) => {
-  debugger
   if (message == "login_success") {
     byId("button-log-out").style.display = "inline-block";
     byId("save-to-my-pastes-button").style.display = "inline-block";

@@ -264,15 +264,16 @@ const loadByDocID = (docID) => {
   persistentDocKey = null;
   docLabel = null;
 
-  if (docID.length === 46) loadSkylink(docID);
-  else if (docID.length === 66) {
-    docKey = docID.substr(46);
-    skylink = docID.substr(0, 46);
-    loadSkylink(skylink, docKey);
-  } else if (docID.length == 64) {
-    docKey = docID.substr(44);
-    persistentDocKey = docKey;
-    let docPubkey = base64ToHex(docID.substr(0, 44)).substr(0, 64);
+  loadSkylink(skylink)
+  // if (docID.length === 46) loadSkylink(docID);
+  // else if (docID.length === 66) {
+  //   docKey = docID.substr(46);
+  //   skylink = docID.substr(0, 46);
+  //   loadSkylink(skylink, docKey);
+  // } else if (docID.length == 64) {
+  //   docKey = docID.substr(44);
+  //   persistentDocKey = docKey;
+  //   let docPubkey = base64ToHex(docID.substr(0, 44)).substr(0, 64);
     skyid.skynetClient.registry.getEntry(docPubkey,
         `hackerpaste:file:${docKey}`)
       .then((result) => {
@@ -282,7 +283,7 @@ const loadByDocID = (docID) => {
       .catch((error) => {
         console.error(error);
       });
-  } else alert('This is not a valid paste link.');
+  // } else alert('This is not a valid paste link.');
 };
 
 const loadView = (viewContent) => {
@@ -302,7 +303,7 @@ const loadSkylink = (skylink, docKey) => {
     .then((data) => {
       data = data.data; // drop the metadata; get to the good stuff
       let loadAsMarkdown = false;
-      if (docKey) data = decryptData(data, docKey);
+      // if (docKey) data = decryptData(data, docKey);
       if (loadAsMarkdown) {
         loadView(marked(data));
       } else editor.setValue(data);
