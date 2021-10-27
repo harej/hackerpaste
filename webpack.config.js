@@ -25,6 +25,12 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.m?jsx?$/,
+        resolve: {
+          fullySpecified: false
+        },
+      },
+      {
         test: /\.css$/,
         use: [
           {
