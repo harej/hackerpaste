@@ -31,6 +31,12 @@ Both logged in and logged out accounts can save "Snapshots," which are immutable
 2. `npm install`
 3. `npm run build`
 
+## Serve
+
+1. `git clone https://github.com/harej/hackerpaste && cd hackerpaste`
+2. `npm install`
+3. `npm run serve`
+
 ## Deploy to Skynet
 
 Anything pushed to the `main` branch of `https://github.com/harej/hackerpaste` will be automatically deployed to Skynet and made available through the Handshake domain `hackerpaste.hns` and the Ethereum domain `hackerpaste.eth`. The `main` branch should be considered the source of truth as to the latest version of Hacker Paste.
